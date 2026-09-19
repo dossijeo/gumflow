@@ -30,13 +30,22 @@ function files(dir) {
     const p=path.join(dir,e.name);return e.isDirectory()?files(p):[p];
   });
 }
+// Tauri's AppImage bundler creates a temporary AppDir next to the final
+// .AppImage. That AppDir legitimately contains symlinks such as `.DirIcon`.
+// Release collection only needs the final top-level bundle files, so do not
+// recursively inspect those implementation directories. We keep `files()`
+// strict for release-artifacts, where an unexpected symlink should still fail.
+function bundleArtifacts(dir) {
+  if(!fs.existsSync(dir))return [];
+  return fs.readdirSync(dir,{withFileTypes:true}).filter(e=>e.isFile()).map(e=>path.join(dir,e.name));
+}
 export function collectNative(platform) {
   if(!['windows','linux'].includes(platform))throw new Error('Use windows or linux.');
   const dir=path.join(ROOT,'desktop/tauri/src-tauri/target/release/bundle');
   const expected=platform==='windows'?[['nsis','.exe','windows-x64-setup.exe']]:
     [['appimage','.AppImage','linux-x64.AppImage'],['deb','.deb','linux-amd64.deb']];
   for(const [folder,ext,name] of expected){
-    const candidates=files(path.join(dir,folder)).filter(f=>f.endsWith(ext));
+    const candidates=bundleArtifacts(path.join(dir,folder)).filter(f=>f.endsWith(ext));
     if(candidates.length!==1)throw new Error(`Expected one ${folder} ${ext}, found ${candidates.length}`);
     copy(candidates[0],`${prefix()}-${name}`);
   }
