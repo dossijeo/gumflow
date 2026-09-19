@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "path": "assets/audio/hd/claustrophobic.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 1842668,
+      "sha256": "18bb8656852efbc82ca2525296022d8f1f836f51ee8bbeceaebd056f257e6a52",
+      "symbol": "HD_ASSETS",
+      "key": "tension"
+    },
+    {
+      "path": "assets/audio/hd/epic.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 1820780,
+      "sha256": "b95590ec4e5418cded9bbf2d9504d7278e3e25635c89beba3ae93611d72b0c3d",
+      "symbol": "HD_ASSETS",
+      "key": "epic"
+    },
+    {
+      "path": "assets/audio/hd/everyday.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 1796588,
+      "sha256": "7b373bb93ed1932d4df60e735488e35c4a3220bc8886684986ef45118cbd5816",
+      "symbol": "HD_ASSETS",
+      "key": "everyday"
+    },
+    {
+      "path": "assets/audio/hd/menu-interlude.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 368108,
+      "sha256": "55251a8c9788a672c695ff5afc0304b55613fd56cc353e2dca5996fd5489964e",
+      "symbol": "HD_ASSETS",
+      "key": "menu"
+    },
+    {
+      "path": "assets/images/campaign/01-gum-works.webp",
+      "mime": "image/webp",
+      "bytes": 199294,
+      "sha256": "af1689bf6b0dee38cd0bed117786169e873bcb524ecb67b28b165b2042d85df9",
+      "symbol": "BG_SOURCES"
+    },
+    {
+      "path": "assets/images/campaign/02-soda-sewers.webp",
+      "mime": "image/webp",
+      "bytes": 196128,
+      "sha256": "ff0dc1d6e3f67f17c1c61d1a66c32f5fa5937622ee97c952bcb54f871865fb13",
+      "symbol": "BG_SOURCES"
+    },
+    {
+      "path": "assets/images/campaign/03-candy-city.webp",
+      "mime": "image/webp",
+      "bytes": 184536,
+      "sha256": "c5a16a170706f19d0ba496586e770879295ea12d8f7736ccc598d9b5afa1205a",
+      "symbol": "BG_SOURCES"
+    },
+    {
+      "path": "assets/images/campaign/04-freezer-district.webp",
+      "mime": "image/webp",
+      "bytes": 145636,
+      "sha256": "8c30cd0c3fee376532c484157ca304a032adb411fef24e5822b3ffa0a293f774",
+      "symbol": "BG_SOURCES"
+    },
+    {
+      "path": "assets/images/campaign/05-chocolate-foundry.webp",
+      "mime": "image/webp",
+      "bytes": 185764,
+      "sha256": "c886b022f14ad54990dc91e93ed003bcaf6934d385b137a7460ac81b10124ed2",
+      "symbol": "BG_SOURCES"
+    },
+    {
+      "path": "assets/images/campaign/06-the-wrapper.webp",
+      "mime": "image/webp",
+      "bytes": 149920,
+      "sha256": "9e796ff5c9244e446b455dbc370d7b7cc5ae3148c5f28e2a62b35730f8786664",
+      "symbol": "BG_SOURCES"
+    },
+    {
+      "path": "assets/images/campaign/07-the-mouth.webp",
+      "mime": "image/webp",
+      "bytes": 126386,
+      "sha256": "730adc10ad588d280d9c9922142662fbe4fd22bc0cee6023fbb3a8b9bacf1b1f",
+      "symbol": "BG_SOURCES"
+    },
+    {
+      "path": "assets/images/endless/01-sky.webp",
+      "mime": "image/webp",
+      "bytes": 88286,
+      "sha256": "45dc0ea64ec081871fb7870d1850b39a0072aa1d76544eb63c29ede7230b9354",
+      "symbol": "EF_LAYER_SOURCES"
+    },
+    {
+      "path": "assets/images/endless/02-distant-skyline.webp",
+      "mime": "image/webp",
+      "bytes": 89910,
+      "sha256": "af64128794c7697bfcfe0ba691df8f805509ed39afb6a01f3f608c828bcf00a0",
+      "symbol": "EF_LAYER_SOURCES"
+    },
+    {
+      "path": "assets/images/endless/03-candy-factories.webp",
+      "mime": "image/webp",
+      "bytes": 170200,
+      "sha256": "e6e207e913c8931ad057c8d8ea9066652535341575a4f47908dd2ab42210f3eb",
+      "symbol": "EF_LAYER_SOURCES"
+    },
+    {
+      "path": "assets/images/endless/04-pipes.webp",
+      "mime": "image/webp",
+      "bytes": 243960,
+      "sha256": "01d2350ee905de9b248a11d63f5215a095035831a2c378750d815521b9ebc64e",
+      "symbol": "EF_LAYER_SOURCES"
+    },
+    {
+      "path": "assets/images/endless/05-foreground-machinery.webp",
+      "mime": "image/webp",
+      "bytes": 80616,
+      "sha256": "a12e370a8deed2d68771f8ef1e2daa9ed6d64bf89a0a567fe55b6925098d9bd9",
+      "symbol": "EF_LAYER_SOURCES"
+    },
+    {
+      "path": "assets/images/endless/06-particles.webp",
+      "mime": "image/webp",
+      "bytes": 156864,
+      "sha256": "5658fc75ccf5795b6ef43746d3668d2de00a70c38588c60576ab33376bf6489b",
+      "symbol": "EF_LAYER_SOURCES"
+    },
+    {
+      "path": "assets/images/thumbnails/01-gum-works.webp",
+      "mime": "image/webp",
+      "bytes": 42430,
+      "sha256": "505bab2e4742cea56cd03c750b82b009ffbd24f3ee8984746c55c52583183512",
+      "symbol": "UI_THUMBS"
+    },
+    {
+      "path": "assets/images/thumbnails/02-soda-sewers.webp",
+      "mime": "image/webp",
+      "bytes": 32724,
+      "sha256": "e724dbd0e7f5251f12033f21525e22100180f030cc09eaf61f019217d6cf162c",
+      "symbol": "UI_THUMBS"
+    },
+    {
+      "path": "assets/images/thumbnails/03-candy-city.webp",
+      "mime": "image/webp",
+      "bytes": 35310,
+      "sha256": "42d803e32e3f3cc2ba0b40f712fd779824a1d45d0567b0c5a02ccae2c0cd20a5",
+      "symbol": "UI_THUMBS"
+    },
+    {
+      "path": "assets/images/thumbnails/04-freezer-district.webp",
+      "mime": "image/webp",
+      "bytes": 27346,
+      "sha256": "3d9b61ac9ff04e0a4c2d9c50111f71ce4071f5ff420f0554454a9becb196df97",
+      "symbol": "UI_THUMBS"
+    },
+    {
+      "path": "assets/images/thumbnails/05-chocolate-foundry.webp",
+      "mime": "image/webp",
+      "bytes": 33548,
+      "sha256": "c6563facb6bed4a51bf536d6abfacd3b5fb602782865d5a2732ba70825d09cfb",
+      "symbol": "UI_THUMBS"
+    },
+    {
+      "path": "assets/images/thumbnails/06-the-wrapper.webp",
+      "mime": "image/webp",
+      "bytes": 31336,
+      "sha256": "acda493bea1043d574891a89eeda8f2207597ed329897b913537eab2507fcc6a",
+      "symbol": "UI_THUMBS"
+    },
+    {
+      "path": "assets/images/thumbnails/07-the-mouth.webp",
+      "mime": "image/webp",
+      "bytes": 23890,
+      "sha256": "038e437ebbd09a3dbd0daf3057381151a6840699cec22a716ec3419fbd064a71",
+      "symbol": "UI_THUMBS"
+    }
+  ]
+}

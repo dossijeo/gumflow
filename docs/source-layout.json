@@ -1,0 +1,458 @@
+[
+  {
+    "path": "src/audio/ambient/scheduler.js",
+    "bytes": 1808
+  },
+  {
+    "path": "src/audio/ambient/state.js",
+    "bytes": 505
+  },
+  {
+    "path": "src/audio/ambient/synthesizer.js",
+    "bytes": 2028
+  },
+  {
+    "path": "src/audio/ambient/world-patterns.js",
+    "bytes": 2739
+  },
+  {
+    "path": "src/audio/classic/arrangement.js",
+    "bytes": 2114
+  },
+  {
+    "path": "src/audio/classic/endless-mix.js",
+    "bytes": 565
+  },
+  {
+    "path": "src/audio/classic/engine.js",
+    "bytes": 3078
+  },
+  {
+    "path": "src/audio/classic/legacy.js",
+    "bytes": 2195
+  },
+  {
+    "path": "src/audio/classic/score.js",
+    "bytes": 1305
+  },
+  {
+    "path": "src/audio/classic/synthesizer.js",
+    "bytes": 1929
+  },
+  {
+    "path": "src/audio/director/danger.js",
+    "bytes": 4329
+  },
+  {
+    "path": "src/audio/director/events.js",
+    "bytes": 2270
+  },
+  {
+    "path": "src/audio/director/state.js",
+    "bytes": 564
+  },
+  {
+    "path": "src/audio/director/transitions.js",
+    "bytes": 3130
+  },
+  {
+    "path": "src/audio/hd/assets.js",
+    "bytes": 308
+  },
+  {
+    "path": "src/audio/hd/engine.js",
+    "bytes": 8136
+  },
+  {
+    "path": "src/audio/hd/scheduler.js",
+    "bytes": 2091
+  },
+  {
+    "path": "src/audio/hd/segments.json",
+    "bytes": 71616
+  },
+  {
+    "path": "src/audio/hd/state.js",
+    "bytes": 929
+  },
+  {
+    "path": "src/audio/integration.js",
+    "bytes": 1158
+  },
+  {
+    "path": "src/core/bootstrap.js",
+    "bytes": 121
+  },
+  {
+    "path": "src/core/events.js",
+    "bytes": 2675
+  },
+  {
+    "path": "src/core/frame.js",
+    "bytes": 329
+  },
+  {
+    "path": "src/core/reset.js",
+    "bytes": 656
+  },
+  {
+    "path": "src/core/save.js",
+    "bytes": 2019
+  },
+  {
+    "path": "src/core/scope-open.js",
+    "bytes": 22
+  },
+  {
+    "path": "src/core/state.js",
+    "bytes": 1776
+  },
+  {
+    "path": "src/debug/boss-hooks.js",
+    "bytes": 3005
+  },
+  {
+    "path": "src/debug/core-hooks.js",
+    "bytes": 2945
+  },
+  {
+    "path": "src/debug/endless-hooks.js",
+    "bytes": 2484
+  },
+  {
+    "path": "src/debug/hd-hooks.js",
+    "bytes": 1373
+  },
+  {
+    "path": "src/debug/music-director-hooks.js",
+    "bytes": 1686
+  },
+  {
+    "path": "src/game/bosses/arena.js",
+    "bytes": 1553
+  },
+  {
+    "path": "src/game/bosses/catalog.js",
+    "bytes": 3138
+  },
+  {
+    "path": "src/game/bosses/combat.js",
+    "bytes": 5926
+  },
+  {
+    "path": "src/game/bosses/integration.js",
+    "bytes": 2141
+  },
+  {
+    "path": "src/game/bosses/practice.js",
+    "bytes": 2912
+  },
+  {
+    "path": "src/game/campaign/generator.js",
+    "bytes": 14243
+  },
+  {
+    "path": "src/game/campaign/lifecycle.js",
+    "bytes": 3947
+  },
+  {
+    "path": "src/game/campaign/session.js",
+    "bytes": 979
+  },
+  {
+    "path": "src/game/campaign/worlds.js",
+    "bytes": 7237
+  },
+  {
+    "path": "src/game/data/humor-and-achievements.js",
+    "bytes": 2730
+  },
+  {
+    "path": "src/game/data/materials-and-flavors.js",
+    "bytes": 976
+  },
+  {
+    "path": "src/game/endless/arenas.js",
+    "bytes": 1232
+  },
+  {
+    "path": "src/game/endless/biomes.js",
+    "bytes": 733
+  },
+  {
+    "path": "src/game/endless/catalog.js",
+    "bytes": 3053
+  },
+  {
+    "path": "src/game/endless/generator.js",
+    "bytes": 1588
+  },
+  {
+    "path": "src/game/endless/integration.js",
+    "bytes": 4946
+  },
+  {
+    "path": "src/game/endless/lifecycle.js",
+    "bytes": 3232
+  },
+  {
+    "path": "src/game/endless/loop-reentry.js",
+    "bytes": 409
+  },
+  {
+    "path": "src/game/endless/modules.js",
+    "bytes": 10229
+  },
+  {
+    "path": "src/game/endless/records.js",
+    "bytes": 1552
+  },
+  {
+    "path": "src/game/endless/recycling.js",
+    "bytes": 2992
+  },
+  {
+    "path": "src/game/endless/session.js",
+    "bytes": 2613
+  },
+  {
+    "path": "src/game/endless/state.js",
+    "bytes": 1084
+  },
+  {
+    "path": "src/game/endless/utilities.js",
+    "bytes": 1163
+  },
+  {
+    "path": "src/game/mechanics/interactions.js",
+    "bytes": 9787
+  },
+  {
+    "path": "src/game/physics/geometry.js",
+    "bytes": 1239
+  },
+  {
+    "path": "src/game/physics/movement.js",
+    "bytes": 7659
+  },
+  {
+    "path": "src/game/update.js",
+    "bytes": 2749
+  },
+  {
+    "path": "src/i18n/catalog.js",
+    "bytes": 48
+  },
+  {
+    "path": "src/i18n/en.json",
+    "bytes": 76503
+  },
+  {
+    "path": "src/i18n/localization.js",
+    "bytes": 4168
+  },
+  {
+    "path": "src/index.js",
+    "bytes": 4281
+  },
+  {
+    "path": "src/rendering/background-classic.js",
+    "bytes": 9118
+  },
+  {
+    "path": "src/rendering/background-painted.js",
+    "bytes": 2890
+  },
+  {
+    "path": "src/rendering/bosses.js",
+    "bytes": 11958
+  },
+  {
+    "path": "src/rendering/camera.js",
+    "bytes": 670
+  },
+  {
+    "path": "src/rendering/collectibles-and-enemies.js",
+    "bytes": 4964
+  },
+  {
+    "path": "src/rendering/effects-update.js",
+    "bytes": 665
+  },
+  {
+    "path": "src/rendering/endless-assets.js",
+    "bytes": 497
+  },
+  {
+    "path": "src/rendering/endless-background.js",
+    "bytes": 5712
+  },
+  {
+    "path": "src/rendering/endless-integration.js",
+    "bytes": 496
+  },
+  {
+    "path": "src/rendering/endless-traps.js",
+    "bytes": 1296
+  },
+  {
+    "path": "src/rendering/feedback.js",
+    "bytes": 1150
+  },
+  {
+    "path": "src/rendering/gum.js",
+    "bytes": 2385
+  },
+  {
+    "path": "src/rendering/interactions.js",
+    "bytes": 8888
+  },
+  {
+    "path": "src/rendering/npcs-and-props.js",
+    "bytes": 3730
+  },
+  {
+    "path": "src/rendering/palettes.js",
+    "bytes": 1467
+  },
+  {
+    "path": "src/rendering/player.js",
+    "bytes": 4352
+  },
+  {
+    "path": "src/rendering/primitives.js",
+    "bytes": 466
+  },
+  {
+    "path": "src/rendering/scene.js",
+    "bytes": 1763
+  },
+  {
+    "path": "src/rendering/terrain.js",
+    "bytes": 2604
+  },
+  {
+    "path": "src/rendering/track-and-objects.js",
+    "bytes": 9955
+  },
+  {
+    "path": "src/styles/adaptive-audio.css",
+    "bytes": 1720
+  },
+  {
+    "path": "src/styles/base.css",
+    "bytes": 12772
+  },
+  {
+    "path": "src/styles/bosses.css",
+    "bytes": 910
+  },
+  {
+    "path": "src/styles/campaign.css",
+    "bytes": 6788
+  },
+  {
+    "path": "src/styles/endless.css",
+    "bytes": 5871
+  },
+  {
+    "path": "src/styles/index.css",
+    "bytes": 204
+  },
+  {
+    "path": "src/styles/menu-base.css",
+    "bytes": 4565
+  },
+  {
+    "path": "src/styles/menu-layout.css",
+    "bytes": 3926
+  },
+  {
+    "path": "src/ui/audio/director-and-ambience.js",
+    "bytes": 4656
+  },
+  {
+    "path": "src/ui/audio/museum-and-options.js",
+    "bytes": 2697
+  },
+  {
+    "path": "src/ui/base/bosses-and-jukebox.js",
+    "bytes": 3508
+  },
+  {
+    "path": "src/ui/base/overlay-and-menus.js",
+    "bytes": 4933
+  },
+  {
+    "path": "src/ui/base/results.js",
+    "bytes": 2154
+  },
+  {
+    "path": "src/ui/base/story-and-library.js",
+    "bytes": 5691
+  },
+  {
+    "path": "src/ui/endless/lobby-and-records.js",
+    "bytes": 5817
+  },
+  {
+    "path": "src/ui/endless/results-and-pause.js",
+    "bytes": 3134
+  },
+  {
+    "path": "src/ui/hud.js",
+    "bytes": 2181
+  },
+  {
+    "path": "src/ui/index.js",
+    "bytes": 374
+  },
+  {
+    "path": "src/ui/menus/achievements.js",
+    "bytes": 2979
+  },
+  {
+    "path": "src/ui/menus/context.js",
+    "bytes": 2242
+  },
+  {
+    "path": "src/ui/menus/free-play.js",
+    "bytes": 1378
+  },
+  {
+    "path": "src/ui/menus/install.js",
+    "bytes": 320
+  },
+  {
+    "path": "src/ui/menus/integration.js",
+    "bytes": 6433
+  },
+  {
+    "path": "src/ui/menus/museum.js",
+    "bytes": 4452
+  },
+  {
+    "path": "src/ui/menus/options.js",
+    "bytes": 5265
+  },
+  {
+    "path": "src/ui/menus/play.js",
+    "bytes": 2104
+  },
+  {
+    "path": "src/ui/menus/title.js",
+    "bytes": 1588
+  },
+  {
+    "path": "src/ui/notifications/dialogue-and-awards.js",
+    "bytes": 289
+  },
+  {
+    "path": "src/ui/notifications/feedback.js",
+    "bytes": 644
+  },
+  {
+    "path": "src/ui/title-controls.js",
+    "bytes": 1791
+  }
+]

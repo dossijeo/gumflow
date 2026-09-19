@@ -1,0 +1,51 @@
+
+ .gf5-main-actions{display:grid;gap:12px;max-width:340px;margin:18px auto 0}
+ .gf5-main-actions .primary,.gf5-main-actions .secondary{min-height:58px;font-size:17px}
+ .gf5-big{font-size:19px!important;min-height:64px!important}
+ .gf5-hero{max-width:860px;margin:0 auto;text-align:center}
+ .gf5-hero .intro{max-width:720px;margin-left:auto;margin-right:auto}
+ .gf5-subnote{margin-top:12px;color:var(--muted);font-size:13px}
+ .gf5-menu-grid,.gf5-world-grid,.gf5-gallery-grid,.gf5-music-grid,.gf5-stats-grid,.gf5-ach-grid{display:grid;gap:16px}
+ .gf5-menu-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:18px}
+ .gf5-world-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:18px}
+ .gf5-gallery-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:18px}
+ .gf5-music-grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:18px}
+ .gf5-stats-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:18px}
+ .gf5-ach-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:18px}
+ .gf5-card,.gf5-world-card,.gf5-stat-card,.gf5-ach-card,.gf5-gallery-card,.gf5-music-card,.gf5-option-card{background:linear-gradient(180deg,#211f3e,#18162e);border:1px solid #ffffff14;border-radius:22px;padding:16px;box-shadow:0 14px 34px rgba(0,0,0,.22)}
+ .gf5-card h3,.gf5-world-card h3,.gf5-gallery-card h3,.gf5-music-card h3{margin:0 0 6px;font-size:22px;line-height:1.05}
+ .gf5-kicker,.gf5-mini{font-size:11px;font-weight:850;letter-spacing:2px;text-transform:uppercase;color:var(--cyan)}
+ .gf5-card p,.gf5-world-card p,.gf5-gallery-card p,.gf5-music-card p,.gf5-option-card p{color:#ddd7ee;line-height:1.45}
+ .gf5-thumb{height:146px;border-radius:18px;background-size:cover;background-position:center;position:relative;overflow:hidden;margin-bottom:14px;border:1px solid #ffffff10}
+ .gf5-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 5%,rgba(12,10,26,.25) 55%,rgba(12,10,26,.72) 100%)}
+ .gf5-thumb-label{position:absolute;left:12px;right:12px;bottom:10px;z-index:1;display:flex;justify-content:space-between;gap:12px;align-items:flex-end}
+ .gf5-thumb-label b{font-size:18px;line-height:1.05}
+ .gf5-thumb-label small{display:block;color:#efeaff}
+ .gf5-thumb-label span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--lime);font-weight:900}
+ .gf5-record{font-size:13px;color:var(--muted);margin:8px 0 14px}
+ .gf5-actions{display:flex;gap:10px;flex-wrap:wrap}
+ .gf5-actions button{flex:1 1 140px}
+ .gf5-tabbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+ .gf5-tabbar .setting.ghost{opacity:.78}
+ .gf5-tabbar .setting.active{background:linear-gradient(180deg,#ff8aba,#ff5da0);color:#221329;border-color:#ff9ec3;box-shadow:0 6px 18px rgba(255,105,169,.3)}
+ .gf5-section-note{margin-top:16px;color:var(--muted);font-size:13px}
+ .gf5-stat-card small{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+ .gf5-stat-card strong{font-size:24px;line-height:1.1}
+ .gf5-ach-card.locked{opacity:.55;filter:saturate(.55)}
+ .gf5-ach-card b{display:block;font-size:16px;margin:4px 0 8px}
+ .gf5-pill-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:16px 0 4px}
+ .gf5-pill{padding:9px 12px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff12;font-size:12px;font-weight:800;letter-spacing:.3px}
+ .gf5-option-card{display:grid;gap:14px;margin-top:14px}
+ .gf5-option-row{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:12px 14px;border-radius:16px;background:#ffffff0a;border:1px solid #ffffff10}
+ .gf5-option-row b{display:block;margin-bottom:4px}
+ .gf5-option-row small{color:var(--muted);display:block;line-height:1.35}
+ .gf5-gallery-card .gf5-thumb{height:170px}
+ .gf5-mixer{display:grid;gap:12px;margin-top:18px}
+ .gf5-mixer label{display:grid;gap:6px;font-size:12px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase;color:var(--cyan)}
+ .gf5-music-card.playing{outline:2px solid var(--lime)}
+ .gf5-legend{display:grid;gap:10px;margin-top:16px}
+ .gf5-control-line{padding:12px 14px;border-radius:16px;background:#ffffff0a;border:1px solid #ffffff10}
+ .gf5-footer-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;margin-top:20px}
+ .gf5-backline{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+ @media (max-width:760px){.gf5-thumb{height:128px}.gf5-gallery-card .gf5-thumb{height:146px}.gf5-main-actions{max-width:none}}
+ 

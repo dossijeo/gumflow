@@ -1,0 +1,10 @@
+ function uiPlayHub(){
+   const resumable=profile.session&&profile.session.level>=0&&profile.session.level<7;
+   setWide(true);state='playhub';
+   showOverlay(`<div class="overline">JUGAR</div><h2>Elige tu <span>modo.</span></h2><p class="intro">Campaña ordenada, selección libre de mundos o el modo infinito con récords locales.</p><div class="gf5-menu-grid"><article class="gf5-card"><div class="gf5-kicker">Historia</div><h3>La fuga de Gum</h3><p>Siete mundos en orden, diálogos, lore, estrellas y jefes finales.</p><div class="gf5-actions"><button class="primary" id="gf5StoryNew">NUEVA PARTIDA</button>${resumable?'<button class="secondary" id="gf5StoryContinue">CONTINUAR</button>':''}</div><div class="gf5-record">${resumable?`Sesión guardada en ${uiEsc(WORLDS[profile.session.level].name)}`:'Todavía no hay una partida en pausa.'}</div></article><article class="gf5-card"><div class="gf5-kicker">Free Play</div><h3>Escenarios sueltos</h3><p>Elige el mundo manualmente, repite tus favoritos y entra directo a la práctica de jefes.</p><div class="gf5-actions"><button class="primary" id="gf5FreePlay">ABRIR ESCENARIOS</button></div><div class="gf5-record">${uiWorldDone()}/7 mundos completados · ${uiTotalStars()}/21 estrellas.</div></article><article class="gf5-card"><div class="gf5-kicker">Endless Flow</div><h3>Arcade infinito</h3><p>Supervivencia y Relax. Módulos encadenados proceduralmente, minijefes, récords y semillas.</p><div class="gf5-actions"><button class="primary" id="gf5Endless">ENTRAR EN ENDLESS</button></div><div class="gf5-record">Mejor distancia: ${efDistance(efStore.normal?.best?.distance||0)} · Relax: ${efDistance(efStore.relax?.best?.distance||0)}</div></article></div><div class="gf5-backline"><button class="secondary" id="gf5PlayBack">← VOLVER</button></div>`,false);
+   $('gf5StoryNew').onclick=()=>{setWide(false);startRun(0)};
+   if($('gf5StoryContinue')) $('gf5StoryContinue').onclick=()=>{setWide(false);continueSession()};
+   $('gf5FreePlay').onclick=uiFreePlay;
+   $('gf5Endless').onclick=()=>efLobby();
+   $('gf5PlayBack').onclick=uiMainMenu;
+ }

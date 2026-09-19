@@ -1,0 +1,7 @@
+# Preserve exact UTF-8/LF source bytes on Windows as well as Linux/Termux.
+* text=auto eol=lf
+*.mp3 binary
+*.webp binary
+*.png binary
+*.jpg binary
+*.zip binary

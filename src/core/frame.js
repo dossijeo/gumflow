@@ -1,0 +1,1 @@
+function frame(time){const dt=lastTime?clamp((time-lastTime)/1000,0,.05):1/60;lastTime=time;visualT+=dt;if(!autoTest){rafAccumulator+=dt;let n=0;while(rafAccumulator>=1/120&&n++<7){update(1/120);rafAccumulator-=1/120}}updateCamera(dt);hudTimer-=dt;if(hudTimer<=0){refreshHUD();hudTimer=.09}render();requestAnimationFrame(frame)}

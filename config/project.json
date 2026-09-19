@@ -1,0 +1,12 @@
+{
+  "name": "GUMFLOW",
+  "version": "6.1.0",
+  "htmlEntry": "web/index.template.html",
+  "scriptEntry": "src/index.js",
+  "styleEntry": "src/styles/index.css",
+  "output": {
+    "standalone": "dist/gumflow.html",
+    "web": "dist/web",
+    "itch": "dist/gumflow-itch.zip"
+  }
+}

@@ -1,0 +1,6 @@
+function groundAt(l,x){const a=l.nodes;let i=0;while(i<a.length-2&&x>a[i+1][0])i++;const x0=a[i][0],x1=a[i+1][0],y0=a[i][1],y1=a[i+1][1],t=clamp((x-x0)/(x1-x0),0,1);return{y:lerp(y0,y1,ease(t)),slope:(y1-y0)*6*t*(1-t)/(x1-x0)}}
+function inGap(l,x){return l.gaps.some(g=>x>g[0]&&x<g[1])}
+function tube(coords){const pts=coords.map(v=>({x:v[0],y:v[1]})),samples=[],a=[pts[0],...pts,pts[pts.length-1]];let length=0;
+ for(let i=1;i<a.length-2;i++)for(let j=0;j<36;j++){const t=j/36,t2=t*t,t3=t2*t,p0=a[i-1],p1=a[i],p2=a[i+1],p3=a[i+2];const p={x:.5*(2*p1.x+(-p0.x+p2.x)*t+(2*p0.x-5*p1.x+4*p2.x-p3.x)*t2+(-p0.x+3*p1.x-3*p2.x+p3.x)*t3),y:.5*(2*p1.y+(-p0.y+p2.y)*t+(2*p0.y-5*p1.y+4*p2.y-p3.y)*t2+(-p0.y+3*p1.y-3*p2.y+p3.y)*t3)};if(samples.length)length+=Math.hypot(p.x-samples.at(-1).x,p.y-samples.at(-1).y);p.s=length;samples.push(p)}
+ const p={...pts.at(-1)};length+=Math.hypot(p.x-samples.at(-1).x,p.y-samples.at(-1).y);p.s=length;samples.push(p);return{points:pts,samples,length,used:false};}
+function pointOnTube(t,s){const p=t.samples;let i=0;while(i<p.length-2&&s>p[i+1].s)i++;const k=clamp((s-p[i].s)/(p[i+1].s-p[i].s||1),0,1);return{x:lerp(p[i].x,p[i+1].x,k),y:lerp(p[i].y,p[i+1].y,k),angle:Math.atan2(p[i+1].y-p[i].y,p[i+1].x-p[i].x)}}
