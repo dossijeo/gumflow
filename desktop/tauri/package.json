@@ -1,0 +1,8 @@
+{
+  "name": "gumflow-desktop",
+  "private": true,
+  "version": "6.1.1",
+  "description": "Tauri shell for the unchanged GUMFLOW web game",
+  "scripts": { "tauri": "tauri" },
+  "devDependencies": { "@tauri-apps/cli": "2.11.4" }
+}

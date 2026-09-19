@@ -1,3 +1,6 @@
+> Nota: este documento describe la extracción original 6.1. Para la ampliación
+> 6.1.1 de Tauri, mandos y Actions, consulta [DESKTOP.md](DESKTOP.md).
+
 # Validation of the source extraction
 
 ## Exact preservation

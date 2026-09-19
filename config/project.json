@@ -1,6 +1,6 @@
 {
   "name": "GUMFLOW",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "htmlEntry": "web/index.template.html",
   "scriptEntry": "src/index.js",
   "styleEntry": "src/styles/index.css",

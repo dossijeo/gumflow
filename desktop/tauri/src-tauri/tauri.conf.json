@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "GUMFLOW",
+  "version": "6.1.1",
+  "identifier": "io.github.dossijeo.gumflow",
+  "build": {
+    "beforeDevCommand": "node ../../scripts/dev.mjs",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeBuildCommand": "node ../../scripts/build-web.mjs",
+    "frontendDist": "../../../dist/web"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [{
+      "label": "main", "title": "GUMFLOW", "create": false,
+      "width": 1280, "height": 720, "minWidth": 800, "minHeight": 450,
+      "resizable": true, "center": true, "fullscreen": false,
+      "dragDropEnabled": false, "useHttpsScheme": true,
+      "backgroundColor": "#141326"
+    }],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+      "capabilities": ["main"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "dossijeo",
+    "category": "Game",
+    "shortDescription": "100% gum. 0% obedience.",
+    "longDescription": "A high-speed momentum platformer with seven worlds, bosses, Endless Flow and adaptive music.",
+    "homepage": "https://github.com/dossijeo/gumflow",
+    "licenseFile": "../../../LICENSE",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper", "silent": true },
+      "nsis": { "installMode": "currentUser", "languages": ["English", "Spanish"], "displayLanguageSelector": true }
+    },
+    "linux": {
+      "appimage": { "bundleMediaFramework": true },
+      "deb": { "depends": ["gstreamer1.0-plugins-base", "gstreamer1.0-plugins-good", "gstreamer1.0-libav", "libudev1"] }
+    }
+  }
+}

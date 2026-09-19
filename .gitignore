@@ -6,3 +6,9 @@
 Thumbs.db
 __pycache__/
 .venv/
+
+# Desktop dependencies/build output; lockfiles ARE intended to be committed.
+/desktop/tauri/node_modules/
+/desktop/tauri/src-tauri/target/
+/desktop/tauri/src-tauri/gen/
+/release-artifacts/

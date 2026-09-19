@@ -1,0 +1,131 @@
+name: Build desktop packages
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: Existing tag/ref to build
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - id: source
+        shell: bash
+        run: echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test the exact web sources
+        run: |
+          npm test
+          npm run verify:core
+          npm run release:check
+          npm run build:release
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install playwright==1.55.0
+      - run: python -m playwright install --with-deps chromium
+      - run: python tests/browser_smoke.py
+      - run: python tests/browser_gamepad.py
+      - name: Resolve lockfiles ONCE for all platforms
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f desktop/tauri/package-lock.json ]; then
+            npm install --prefix desktop/tauri --package-lock-only --ignore-scripts
+          fi
+          if [ ! -f desktop/tauri/src-tauri/Cargo.lock ]; then
+            cargo generate-lockfile --manifest-path desktop/tauri/src-tauri/Cargo.toml
+          fi
+          cargo metadata --manifest-path desktop/tauri/src-tauri/Cargo.toml --locked --no-deps --format-version 1 > /dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dependency-locks
+          path: |
+            desktop/tauri/package-lock.json
+            desktop/tauri/src-tauri/Cargo.lock
+          if-no-files-found: error
+          retention-days: 30
+      - run: node scripts/release.mjs web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gumflow-release-web
+          path: release-artifacts/
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-browser-tests
+          path: test-results/
+          if-no-files-found: ignore
+  native:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            bundles: nsis
+          - os: ubuntu-22.04
+            platform: linux
+            bundles: appimage,deb
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    env:
+      # Lets linuxdeploy/AppImage tools run on CI without a FUSE mount.
+      APPIMAGE_EXTRACT_AND_RUN: '1'
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.commit }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Linux WebView, controllers and MP3 playback dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev \
+            libwebkit2gtk-4.1-dev libgtk-3-dev libudev-dev \
+            libayatana-appindicator3-dev librsvg2-dev patchelf file libfuse2 \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
+            gstreamer1.0-plugins-bad gstreamer1.0-libav xdg-utils
+      - uses: actions/download-artifact@v4
+        with:
+          name: dependency-locks
+          path: desktop/tauri
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/tauri/src-tauri -> target
+          shared-key: ${{ matrix.platform }}
+      - run: npm ci --prefix desktop/tauri
+      - run: npm run build:web
+      - name: Check native code and navigation whitelist
+        run: cargo test --manifest-path desktop/tauri/src-tauri/Cargo.toml --locked --lib
+      - name: Build release bundles (no server or Node runtime shipped)
+        run: npm run desktop:build -- --bundles ${{ matrix.bundles }} -- --locked
+      - run: node scripts/release.mjs collect ${{ matrix.platform }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gumflow-release-${{ matrix.platform }}
+          path: release-artifacts/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14

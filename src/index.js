@@ -91,4 +91,5 @@
 /* @include "src/ui/title-controls.js" */
 /* @include "src/debug/hd-hooks.js" */
 /* @include "src/debug/music-director-hooks.js" */
+/* @include "src/platform/index.js" */
 /* @include "src/core/bootstrap.js" */

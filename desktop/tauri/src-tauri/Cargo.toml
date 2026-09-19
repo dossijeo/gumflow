@@ -1,0 +1,35 @@
+[package]
+name = "gumflow-desktop"
+version = "6.1.1"
+description = "GUMFLOW momentum platformer"
+authors = ["dossijeo"]
+edition = "2021"
+license-file = "../../../LICENSE"
+repository = "https://github.com/dossijeo/gumflow"
+publish = false
+default-run = "gumflow"
+
+[lib]
+name = "gumflow_desktop"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "gumflow"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "=2.6.3", features = [] }
+
+[dependencies]
+tauri = { version = "=2.11.5", features = [] }
+serde = { version = "1", features = ["derive"] }
+
+# Android/iOS are deliberately not part of this first desktop release pipeline.
+# They can still use the browser Gamepad API; this bridge is desktop-only.
+[target.'cfg(any(target_os = "windows", target_os = "linux"))'.dependencies]
+gilrs = "=0.11.2"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

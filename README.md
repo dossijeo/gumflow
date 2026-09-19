@@ -4,141 +4,150 @@
 
 A fast 2D momentum platformer about a piece of gum that refuses to be chewed.
 Seven campaign worlds, bosses, Free Play, Endless Flow, Spanish/English menus,
-and an adaptive soundtrack with Everyday, Claustrophobic and Epic arrangements.
+and adaptive HD/classic music.
 
-This checkout preserves **GUMFLOW 6.1**. The original single-file release has been
-extracted into source files and binary assets. Rebuilding the standalone target
-produces **exactly the same HTML bytes**, not a remake of the game.
+This revision packages the approved **6.1 game as 6.1.1** and adds controller
+input and a Tauri 2 desktop shell. The game's content/version label remains 6.1;
+6.1.1 identifies the new packaging and input layer, not a rewritten game.
 
-[Instrucciones en español](docs/LEEME.md) · [Architecture](docs/ARCHITECTURE.md) ·
-[Validation](docs/VALIDATION.md) · [Asset inventory](docs/ASSETS.md)
+**[Publicación y compilación, en español](docs/DESKTOP.md)** ·
+[Gamepad design and limitations](docs/GAMEPAD.md) ·
+[Original source architecture](docs/ARCHITECTURE.md) ·
+[Asset inventory](docs/ASSETS.md)
 
-## Run and build
+## Browser builds — still dependency-free
 
-Use **Node.js 22 or newer**. There are no npm dependencies and no dependency
-installation is required. Commands work from the repository root.
+Use Node.js 22 or newer. No npm installation is needed for the web game.
 
 ```sh
-npm run dev                  # local server; refresh the browser after editing
-npm run build                # dist/gumflow.html — standalone and fully offline
-npm run build:web            # dist/web/ — HTML, JS, CSS and external assets
-npm run build:release        # both targets + two ZIP packages + SHA256SUMS
-npm test                     # 10 structural/reproducibility tests
-npm run verify:baseline      # compare against the frozen 6.1 release
+npm run dev                  # http://127.0.0.1:5173; refresh after editing
+npm run build                # dist/gumflow.html — self-contained HTML
+npm run build:web            # dist/web — external JS/CSS/MP3/WebP files
+npm run build:release        # HTML, itch.io ZIP, web ZIP and SHA256SUMS
+npm test                     # build, controller and configuration tests
+npm run verify:core          # original 6.1 bytes/assets preserved outside additions
 ```
 
-`dev` serves `http://127.0.0.1:5173` and rebuilds source changes on page refresh.
-Stop it with Ctrl+C. `HOST` and `PORT` can be set explicitly. Restart the server
-when changing the build configuration itself.
+The HTML and web ZIP now include the same optional gamepad support used by the
+native shell. Keyboard/touch, physics, campaign, bosses, Endless and music
+remain the original implementation. All assets stay offline.
 
-The release command writes:
+## Desktop builds
+
+The Tauri project is in `desktop/tauri/src-tauri/`. It consumes **the same**
+`dist/web` output. It does not ship a development server or Node.js runtime.
+
+GitHub Actions can build without a Windows/Linux development machine:
+
+1. Push the sources and workflows to `main`.
+2. Run **Actions → Build desktop packages → Run workflow** for test artifacts.
+3. Download and test Windows/Linux packages. Save the generated dependency locks.
+4. Push the new tag `v6.1.1` to run **Draft release**.
+5. Test the draft's files, then manually **Publish release**.
+
+An ordinary push does not publish a release. The existing `Release-web` is not
+changed. Builds target **Windows x64** and **Linux x64**, not Android/iOS yet.
+
+On a suitably configured Windows/Linux development machine:
+
+```sh
+npm run desktop:install      # desktop-only npm dependencies
+npm run desktop:dev
+npm run desktop:build -- --bundles nsis             # Windows
+npm run desktop:build -- --bundles appimage,deb     # Linux
+```
+
+Rust and the native platform prerequisites are required for these commands.
+See [the guide](docs/DESKTOP.md) for the first build, lockfiles, releases,
+unsigned Windows executables, Linux dependencies and troubleshooting.
+
+## Controls
+
+| Action | Keyboard | Standard controller |
+|---|---|---|
+| Move / navigate | A D / arrows | Left stick / D-pad |
+| Jump / confirm | Space / W / Up | A / Cross |
+| Gum / back in menus | X / Shift | B / Circle |
+| Alternate gum | X / Shift | X / Square, RB / R1, RT / R2 |
+| Pause | P / Esc | Start / Menu |
+| Fullscreen | title/HUD button; F11 in desktop | Y / Triangle |
+| Change menu tab | select a tab | LB / RB |
+
+**Options → Controls → Gamepad** has enable/disable, adjustable dead zone,
+backend selection and connection diagnostics. Browser standard mappings are
+preferred; desktop falls back to a small native `gilrs` bridge. Non-standard
+browser mappings are not guessed. Single player; no vibration or remapping UI.
+Physical controllers and native WebViews still require platform testing.
+
+## Source and packaging layout
 
 ```text
-dist/
-  gumflow.html          # byte-identical to the original 6.1 at this commit
-  gumflow-itch.zip      # one index.html at the archive root; fully embedded
-  gumflow-web.zip       # external-file web build, with index.html at root
-  SHA256SUMS
-  web/
-    index.html
-    game.js
-    styles.css
-    assets/
+src/                    # existing shared-scope game, organized by subsystem
+  core/ game/ rendering/ audio/ ui/ i18n/ styles/ debug/
+  platform/             # additive gamepad + optional desktop bridge
+assets/                 # the original 20 WebP images and 4 MP3 cuts
+web/                    # HTML templates / fixed UI elements
+scripts/                # web builder, desktop launcher, release helpers
+config/                 # build paths and asset inventory
+tests/                  # original baseline + JS / Chromium regression tests
+desktop/tauri/           # isolated npm tool dependency
+  src-tauri/            # Rust app, native controllers, Tauri config, icons
+.github/workflows/
+  ci.yml                # web tests on pushes / pull requests
+  desktop-build.yml     # manual/reusable build, artifacts only
+  release.yml           # version tag → all builds → draft release
 ```
 
-The generated `dist/` directory is intentionally not versioned. All inputs
-needed to rebuild it are versioned, including the music clips and images.
-Opening `web/index.template.html` or `src/index.js` directly is **not** a way to
-run the game: use the development server or a generated distribution.
+Original source files still use build-time includes, not ES module imports.
+The platform extension is included immediately before the existing bootstrap.
+The former byte-identical source extraction is documented in
+[ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Source layout
+## Preservation and tests
 
-```text
-src/
-  index.js               # ordered build-time include manifest
-  core/                  # state, initialization, events, save, frame loop
-  game/
-    campaign/            # worlds, generation, session and progression
-    physics/             # geometry, momentum, jumps, loops and tubes
-    mechanics/           # flavors, anchors, bubbles, wrappers and interactions
-    bosses/              # catalog, arenas, attacks, practice and integration
-    endless/             # seeded modules, biomes, recycling and records
-    data/                # materials, achievements and gags
-  rendering/             # Gum, terrain, NPCs, bosses, parallax and effects
-  audio/
-    classic/             # existing procedural chiptune score and synthesizer
-    hd/                  # audio clips manifest, musical timing, crossfades
-    director/            # danger detection and Everyday/Epic/tension decisions
-    ambient/             # seven world accompaniment patterns and scheduling
-  ui/                    # title, menus, HUD, museum, options and notifications
-  i18n/                  # existing display-localization engine + English catalog
-  styles/                # initial styles and dynamically installed menu styles
-  debug/                 # original testing hooks, preserved unchanged
-assets/
-  images/campaign/       # seven painted world backgrounds
-  images/endless/        # six transparent parallax layers
-  images/thumbnails/     # seven actual in-game scene thumbnails
-  audio/hd/              # four existing MP3 cuts; no re-encoding
-web/                     # page template + fixed canvas/HUD/overlay markup
-scripts/                 # dependency-free builds, ZIP writer and dev server
-config/                  # project paths and asset inventory
-tests/                  # baseline fingerprint + regression tests
-docs/                   # architecture, editing and validation notes
-```
-
-## Why not ES modules yet?
-
-This is a **source-preserving extraction**, not an architectural rewrite. The
-original game contains ordered extension layers and shared lexical state.
-Build-time includes retain that exact scope, declaration order and function
-replacement order. They are not browser `<script>` tags or ES module imports.
-
-Each subsystem can now be edited separately, and assets are real MP3/WebP files
-rather than enormous base64 strings. The standalone builder reinserts those
-assets and JSON tables without changing a single gameplay instruction. See
-[the architecture notes](docs/ARCHITECTURE.md) before reordering source files.
-
-For the external-file web target only, the audio loader reads the same MP3 bytes
-with `fetch` instead of `atob`. All transition logic, decoding, scheduling,
-volumes and danger triggers are unchanged. The tests explicitly reverse this
-transport adapter and compare the resulting runtime with the original.
-
-## Verification
-
-Frozen release fingerprint:
+`verify:core` removes **only** the explicitly delimited new platform/input block
+from the assembled HTML and checks that everything else still matches the
+approved 6.1 fingerprint:
 
 ```text
 11,224,996 bytes
 SHA-256 611f9687f455360eb0f97e9e46f76f93446aea14d94ed24ade3b38f1254bb6f5
 ```
 
-`verify:baseline` is deliberately strict. It will fail after intentional game
-changes; that is expected. `build` still works for edited versions. Do not update
-the frozen baseline merely to hide an unexpected regression.
+It also checks all 24 original assets. Their bytes have not been recompressed.
+The generated HTML itself is now different because it includes controller
+support. `verify:baseline` remains the old *strict* whole-file comparison and
+is expected to fail after this intentional addition. Its fixture was not reset.
 
-Optional browser tests require Python 3.10+ and Playwright with Chromium:
+Optional browser tests need Python and Playwright with Chromium:
 
 ```sh
 npm run build:release
 python tests/browser_smoke.py
-# Or use an installed Chromium:
-python tests/browser_smoke.py --browser /path/to/chromium
+python tests/browser_gamepad.py
+# Add --browser /path/to/chromium to use an installed browser.
 ```
 
-They exercise both distribution targets in Spanish and English, compare
-simulation snapshots, enter all seven levels and boss arenas, run both Endless
-modes, change language, and decode/play the adaptive clips. They use local
-request interception and a clearly labeled in-memory storage fixture; they do
-not claim to test persistent browser storage or a real itch.io deployment.
+The tests use a clearly marked in-memory storage harness. The gamepad tests use
+synthetic standard controllers and a mocked native bridge, **not real USB or
+Bluetooth hardware**. The workflow adds `cargo test` and the actual Tauri build;
+no native binary is claimed to have been locally compiled during patch creation.
+
+For the next packaging version:
+
+```sh
+npm run version:set -- 6.1.2
+npm run release:check
+```
+
+Review and commit the changes before tagging. The helper updates package,
+Tauri and Cargo metadata (including lockfile root versions when present), not
+in-game text, music or dependency versions.
 
 ## License and provenance
 
-The repository's existing **LICENSE is retained without modification**. This
-extraction introduces no new third-party music, art or runtime libraries. The
-four music assets are the cuts already embedded in version 6.1, not the original
-full-length uploads. Their origins are recorded in [ASSETS.md](docs/ASSETS.md).
-No new ownership or licensing assertions about upstream melodies are made here.
-
-A Windows wrapper and a Godot port are **not** part of this extraction. The
-external-file web build is available as an input for a future desktop package;
-there is no second implementation of the game to maintain.
+The existing **LICENSE is unchanged**. Original asset provenance remains in
+[ASSETS.md](docs/ASSETS.md). Tauri/gilrs are added desktop dependencies; no new
+third-party songs or pictures are introduced. The app icon is rendered from
+Gum's existing drawing function. Source is shipped under the repository's
+existing terms; this patch makes no new claims about rights to upstream music.

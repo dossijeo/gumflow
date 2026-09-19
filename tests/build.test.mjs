@@ -6,14 +6,15 @@ import os from 'node:os';
 import vm from 'node:vm';
 import { inflateRawSync } from 'node:zlib';
 import { ROOT, assemble, compactJSON, standalone, webBundle, sourcePath, verifyBaseline, sha256 } from '../scripts/lib/build.mjs';
+import { verifyPreservedCore } from '../scripts/lib/preserved-core.mjs';
 import { crc32, zipBytes } from '../scripts/lib/zip.mjs';
 
 const source = standalone();
 const web = webBundle();
 const assets = JSON.parse(fs.readFileSync(path.join(ROOT, 'config/assets.json'), 'utf8')).assets;
 
-test('frozen 6.1 rebuild is byte-identical, including all 24 assets', () => {
-  assert.equal(verifyBaseline().assets, 24);
+test('removing only the additive desktop layer restores exact 6.1 bytes', () => {
+  assert.equal(verifyPreservedCore().assets, 24);
 });
 test('standalone is deterministic and has no build directives', () => {
   assert.equal(standalone().html, source.html);
