@@ -33,10 +33,20 @@ export function stageAudioPlugins(source,destination,selection=profile) {
   for(const item of found)fs.copyFileSync(item.file,path.join(destination,item.filename));
   return {profile:'audio-only',plugins:found.map(f=>({name:f.filename,bytes:f.bytes.length,sha256:sha256(f.bytes)}))};
 }
+export function detectGStreamerPluginDir() {
+  const inspect=execFileSync('gst-inspect-1.0',['coreelements'],{
+    encoding:'utf8',env:{...process.env,LC_ALL:'C',LANG:'C'}
+  });
+  const match=/^\s*Filename\s+(.+libgstcoreelements\.so)\s*$/m.exec(inspect);
+  if(!match)throw new Error('Could not determine the GStreamer plugin directory from gst-inspect-1.0.');
+  const dir=path.dirname(match[1].trim());
+  if(!fs.existsSync(path.join(dir,'libgstcoreelements.so')))
+    throw new Error(`GStreamer reported an invalid plugin directory: ${dir}`);
+  return dir;
+}
 function main() {
   if(process.platform!=='linux')throw new Error('This preparation step is Linux-only.');
-  const source=process.env.GUMFLOW_GSTREAMER_SOURCE || execFileSync('pkg-config',
-    ['--variable=pluginsdir','gstreamer-1.0'],{encoding:'utf8'}).trim();
+  const source=process.env.GUMFLOW_GSTREAMER_SOURCE || detectGStreamerPluginDir();
   if(!source || !fs.statSync(source).isDirectory())throw new Error('GStreamer plugin directory is unavailable.');
   const destination=fs.mkdtempSync(path.join(os.tmpdir(),'gumflow-gstreamer-'));
   const report=stageAudioPlugins(source,destination);
