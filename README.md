@@ -188,7 +188,10 @@ report and checksum. No existing published release is modified.
 This variant initializes CrazyGames SDK v3 before the game starts, reports
 actual gameplay start/stop, respects the portal's `muteAudio`, uses the portal
 locale for automatic language selection, and removes in-game fullscreen.
-No advertising, account prompts, cloud saves or purchases are implemented.
+The CrazyGames-only save provider uses SDK Data for cloud/guest progress.
+Its lightweight menu loads first; world artwork and gameplay music are deferred.
+Select **Yes, using the Data Module from the CrazyGames SDK** when uploading.
+No advertising, account prompts or purchases are implemented.
 Normal HTML/itch.io/desktop builds remain offline and do not load this SDK.
 The CrazyGames variant contacts the SDK and reports lifecycle events to the
 platform: do **not** describe it as fully offline or network-free.

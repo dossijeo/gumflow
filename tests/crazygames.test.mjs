@@ -8,7 +8,8 @@ import { ROOT, webBundle, standalone, sha256 } from '../scripts/lib/build.mjs';
 import { crazygamesBundle, writeCrazyGames } from '../scripts/lib/crazygames-build.mjs';
 
 function factory() {
-  const context=vm.createContext({ Float32Array, console });
+  const context=vm.createContext({ Float32Array, console, TextEncoder });
+  vm.runInContext(fs.readFileSync(path.join(ROOT,'src/platform/crazygames/storage.js'),'utf8'),context);
   vm.runInContext(fs.readFileSync(path.join(ROOT,'src/platform/crazygames/portal.js'),'utf8'),context);
   return context.GumflowCG;
 }
@@ -19,7 +20,8 @@ function fixture(environment='crazygames',locale='en-US',muteAudio=false) {
   game.settings={muteAudio};
   game.addSettingsChangeListener=fn=>{check();listeners.add(fn)};
   game.removeSettingsChangeListener=fn=>{check();listeners.delete(fn)};
-  const sdk={init:async()=>{calls.push('init');await Promise.resolve();initialized=true;},
+  const values=new Map();const data={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
+  const sdk={data,init:async()=>{calls.push('init');await Promise.resolve();initialized=true;},
     get environment(){if(!initialized)throw new Error('environment before init');return environment;},
     get game(){check();return game;},get user(){check();return {systemInfo:{locale}};}};
   return {sdk,calls,listeners,setMute(value){game.settings={muteAudio:value};for(const fn of listeners)fn(game.settings);}};
@@ -88,8 +90,10 @@ test('CrazyGames bundle is isolated, deterministic, and contains no native fulls
   const before=standalone().html,web=webBundle(),cg=crazygamesBundle();
   assert.equal(crazygamesBundle().js,cg.js);
   assert.doesNotThrow(()=>new vm.Script(cg.js));assert.doesNotThrow(()=>new vm.Script(cg.loader));
-  assert.ok(cg.html.includes('src="./crazygames.js"'));assert.ok(!cg.html.includes('src="./game.js"'));
-  assert.ok(cg.loader.includes('https://sdk.crazygames.com/crazygames-sdk-v3.js'));
+  assert.ok(!cg.html.includes('src="./crazygames.js"'));
+  assert.ok(cg.html.includes('id="cg-sdk" defer src="https://sdk.crazygames.com/crazygames-sdk-v3.js"'));
+  assert.ok(cg.html.includes('id="cgShell"'));
+  assert.ok(cg.js.includes('const localStorage=window.GumflowCrazyGames.storage;'));
   assert.ok(!cg.js.includes('requestFullscreen'));assert.ok(!cg.js.includes('webkitRequestFullscreen'));
   assert.equal((cg.js.match(/GumflowCrazyGames\.audioDestination\(audioCtx\)/g)||[]).length,5);
   assert.ok(!web.html.includes('crazygames'));assert.ok(!web.js.includes('GumflowCrazyGames'));
@@ -100,7 +104,8 @@ test('all 24 original assets are copied byte-identically into the CrazyGames bui
   try{
     const out=writeCrazyGames(dir);assert.equal(out.assets.length,24);
     for(const a of out.assets)assert.equal(sha256(fs.readFileSync(path.join(dir,a.path))),a.sha256);
-    assert.equal(fs.readdirSync(dir).sort().join(','),'assets,crazygames.js,game.js,index.html,styles.css');
+    assert.equal(fs.readdirSync(dir).length,27);
+    assert.ok(fs.readdirSync(dir,{withFileTypes:true}).every(e=>e.isFile()));
   } finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('loading failure is surfaced to loader rather than reported as ready',async()=>{

@@ -55,6 +55,8 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       - name: Browser / SDK v3 contract tests (mock SDK; no live analytics)
         run: python tests/browser_crazygames.py
+      - name: Staged loading and SDK Data regressions (real HTTP, mock SDK)
+        run: python tests/browser_crazygames_loading.py
       - name: Stage upload ZIP and checksums
         run: node scripts/crazygames-artifacts.mjs
       - name: Upload CrazyGames package

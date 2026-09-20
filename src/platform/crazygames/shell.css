@@ -1,0 +1,27 @@
+/* Critical first-paint CSS; no fonts, textures or CSS imports from the network. */
+html,body{margin:0;width:100%;min-height:100%;background:#141326;color:#fff4db;font-family:system-ui,sans-serif}
+#cgShell{position:fixed;inset:0;z-index:100000;overflow:auto;background:radial-gradient(ellipse at 76% 25%,#482648 0,transparent 55%),radial-gradient(ellipse at 10% 85%,#253b49 0,transparent 65%),#141326;display:grid;place-items:center;padding:18px;box-sizing:border-box}
+#cgShell[hidden],#cgRetry[hidden],#cgDetail[hidden],#cgBusy[hidden]{display:none!important}
+.cg-shell-inner{width:min(850px,100%);text-align:center;display:grid;grid-template-columns:1fr 180px;align-items:center;gap:16px}
+#cgShell h1{font-size:clamp(42px,10vw,86px);line-height:.96;font-weight:950;letter-spacing:-.055em;color:#ff83b8;text-shadow:0 6px #7e2f62;margin:8px 0 22px}
+#cgShell .cg-tag{color:#d7cde0;font-size:15px;letter-spacing:.04em;margin:0 0 20px}
+#cgShell .cg-eyebrow{font-size:11px;letter-spacing:.18em;color:#80f0d8;font-weight:800}
+#cgHero{width:180px;height:180px;max-width:100%}
+.cg-shell-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+#cgShell button{font:800 15px system-ui;border:1px solid #645377;border-radius:14px;background:#2b233c;color:#fff4db;padding:14px 20px;cursor:pointer;min-height:44px}
+#cgShell button:focus-visible{outline:3px solid #80f0d8;outline-offset:3px}
+#cgShell .cg-primary{grid-column:1/-1;background:#ff83b8;color:#241329;font-size:22px;border:none;box-shadow:0 5px #a03c76}
+#cgShell button:disabled{opacity:.5;cursor:wait}
+.cg-shell-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#cgShell .cg-shell-tools button{padding:8px 13px;font-size:12px}
+#cgStage{font-size:13px;color:#ccc5dc;min-height:20px;line-height:1.45;margin-top:18px}
+#cgDetail{font:12px/1.5 ui-monospace,monospace;color:#ffe3b8;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;max-height:150px;overflow:auto;border:1px solid #72536a;border-radius:10px;padding:12px;background:#181423}
+#cgBusy{height:3px;background:linear-gradient(90deg,#ff83b8,#80f0d8);border-radius:3px;animation:cgBreathe 1.2s infinite alternate}
+#cgShell.cg-error{z-index:100010}
+html.cg-loading #hud,html.cg-loading #panel,html.cg-loading #touchControls{visibility:hidden!important}
+@keyframes cgBreathe{from{opacity:.25}to{opacity:1}}
+@media(max-width:600px){.cg-shell-inner{grid-template-columns:1fr;gap:0}#cgHero{width:110px;height:100px;grid-row:1;justify-self:center}#cgShell h1{font-size:58px;margin-bottom:15px}.cg-shell-actions{gap:8px}#cgShell button{padding:11px}#cgShell .cg-tag{margin-bottom:14px}}
+@media(max-height:430px) and (min-width:600px){#cgShell h1{font-size:58px;margin:8px 0 12px}.cg-shell-actions{gap:6px}#cgShell button{padding:9px 14px}#cgStage{margin:10px 0}#cgHero{width:140px;height:140px}}
+@media(prefers-reduced-motion:reduce){#cgBusy{animation:none}}
+
+#cgShell.cg-scene .cg-shell-actions,#cgShell.cg-scene .cg-shell-tools,#cgShell.cg-error .cg-shell-actions,#cgShell.cg-error .cg-shell-tools{display:none}

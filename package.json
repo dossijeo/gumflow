@@ -28,6 +28,7 @@
     "test:linux": "python3 tests/linux_appimage_smoke.py --appimage desktop/tauri/src-tauri/target/release/bundle/appimage",
     "build:crazygames": "node scripts/build-crazygames.mjs",
     "dev:crazygames": "node scripts/dev.mjs --crazygames",
-    "test:crazygames": "python tests/browser_crazygames.py"
+    "test:crazygames": "python tests/browser_crazygames.py",
+    "test:crazygames-loading": "python tests/browser_crazygames_loading.py"
   }
 }

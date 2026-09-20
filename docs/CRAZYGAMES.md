@@ -1,192 +1,170 @@
-# GUMFLOW — CrazyGames distribution
+# GUMFLOW — CrazyGames cloud / staged-loading edition
 
-Esta integración está preparada para **Basic Launch**, no para anunciar soporte
-completo de monetización/cuentas/guardado en nube. No publica nada por sí sola.
-No altera la física, los niveles, los archivos de música ni los disparadores
-musicales de GUMFLOW. Tampoco cambia la licencia de esos recursos.
+Variante **exclusiva de CrazyGames**, revisión de canal 2 sobre GUMFLOW 6.1.2.
+No altera las distribuciones normales HTML, itch.io o Tauri. No añade anuncios,
+compras ni peticiones de registro. No cambia las licencias de código o recursos.
 
-## Construir desde Termux / PC
-
-Con Node.js 22 o superior, desde la raíz del repositorio:
+## Construir / pipeline
 
 ```sh
 npm run build:crazygames
 npm run dev:crazygames
 ```
 
-No hace falta `npm install`, Rust ni Tauri para esta variante. El servidor usa
-`http://127.0.0.1:5173`; al recargar recompone las fuentes editadas. Ctrl+C lo para.
-Para escuchar el audio en un navegador que bloquea autoplay, pulsa una vez un
-control del juego. La política del navegador sigue siendo aplicable.
+Node.js >=22; sin dependencias npm para construir. El servidor local se abre en
+`http://127.0.0.1:5173`; el SDK oficial necesita Internet. No exige credenciales
+ni secretos de CrazyGames en el repositorio. El workflow **Build CrazyGames
+package** hace las comprobaciones de código, construye y prueba esta variante
+sin compilar escritorio. Un push de estos cambios a main lo inicia.
 
-Salidas:
+Resultado:
 
 ```text
-dist/
-  gumflow-crazygames.zip           # ESTE ZIP es el que se sube al portal
-  gumflow-crazygames.zip.sha256
-  gumflow-crazygames-build.json    # inventario, tamaño y hashes
-  crazygames/
-    index.html
-    game.js
-    styles.css
-    crazygames.js                 # adaptador propio, NO una copia del SDK
-    assets/
+dist/gumflow-crazygames.zip              # Subir ESTE ZIP
+  index.html                            # Menú mínimo, CSS crítico y adaptadores
+  game.js                               # Código del juego, carga diferida
+  styles.css                            # CSS del juego, carga diferida
+  hd-menu-interlude.mp3                  # Única grabación pedida en el menú
+  hd-everyday.mp3                        # Grabaciones pedidas tras empezar a jugar
+  hd-claustrophobic.mp3
+  hd-epic.mp3
+  campaign-01-gum-works.webp             # Fondo del mundo seleccionado
+  …                                     # Otros mundos, capas y miniaturas
 ```
 
-Los 24 MP3/WebP originales se copian sin recomprimir. Solo la variante CrazyGames
-carga `https://sdk.crazygames.com/crazygames-sdk-v3.js`. Se mantiene remoto como
-indica la documentación oficial. El ZIP **no es autocontenido sin conexión**:
-el SDK necesita Internet. Los otros productos siguen sin cargarlo.
+**27 archivos, todos en la raíz.** No hay subcarpetas que se puedan perder al
+seleccionar archivos desde Android. Los 24 MP3/WebP originales se conservan byte
+por byte: se renombra su ruta de distribución, no su contenido. Se reutiliza
+la función que dibuja a Gum en el juego para el pequeño menú de carga.
 
-## GitHub Actions, desde el móvil
+El artifact de Actions se llama `gumflow-release-crazygames`. Extrae el ZIP
+exterior de GitHub y sube el `GUMFLOW-v…-crazygames.zip` interior. Los informes y
+SHA256 no son archivos del juego y no se suben. La ejecución añade tamaños
+individuales a su resumen. **No hace falta generar una nueva release nativa.**
 
-1. Sube este parche a `main`.
-2. Abre **Actions → Build CrazyGames package → Run workflow → main**.
-   Los cambios en código también disparan este workflow automáticamente; no
-   necesitas lanzarlo dos veces si ya está ejecutándose por el push.
-3. Se ejecutan las pruebas Node, preservación del núcleo, construcción del ZIP y
-   pruebas Chromium con SDK simulado. No se compilan Windows/Linux.
-4. Descarga el artifact **gumflow-release-crazygames**.
-5. Extrae el ZIP exterior de GitHub. Dentro está
-   **GUMFLOW-v6.1.2-crazygames.zip**, más el informe y el SHA-256.
-6. Sube ese ZIP interior al Developer Portal como juego HTML5. No subas el ZIP
-   del artifact ni el instalador Windows ni el paquete de itch.io.
+## Formulario del portal — IMPORTANTE
 
-El número procede de `config/project.json`: cambiará al usar `version:set` en
-una futura release. Este parche conserva 6.1.2 en los paquetes; no fuerza una
-nueva publicación. La pantalla del juego conserva su versión de contenido 6.1.
+- Game name: GUMFLOW; engine: HTML5.
+- Progress save: **Yes, using the Data Module from the CrazyGames SDK**.
+- Mobile: sí. Online multiplayer: no. SDK muteAudio: sí.
+- Borra los archivos de la subida anterior y carga el ZIP completo actualizado.
 
-El workflow **Draft release** incorpora un job CrazyGames paralelo a los builds
-existentes y adjunta el paquete a los nuevos borradores. No modifica la Release
-v6.1.2 ya publicada. Para una próxima Release utiliza una versión/tag NUEVOS:
+Con esta variante ya NO se elige LocalStorage. Si se mantiene esa selección,
+el SDK deshabilita el Data Module y el arranque lo indica expresamente. No se
+silencia ese error ni se finge que un guardado local es un guardado cloud.
 
-```sh
-npm run version:set -- 6.1.3
-npm run release:check
-# Revisa, prueba, haz commit y push antes de crear y subir v6.1.3.
-```
+## Guardado y migración
 
-## Contrato del SDK v3
+Después de `await SDK.init()`, el Data Module tiene precargados los datos.
+Se validan lecturas antes de iniciar el motor. El identificador `localStorage`
+se sustituye **solo dentro del ámbito del juego**, por un proveedor que llama
+`SDK.data.getItem`, `setItem` y `removeItem`. **window.localStorage no se modifica**;
+el SDK lo necesita para su propio funcionamiento con invitados.
 
-- Carga el SDK y espera `await window.CrazyGames.SDK.init()` **antes** de evaluar
-  `game.js`. Un fallo de red/init muestra un mensaje de error y Reintentar; no
-  finge éxito ni arranca una partida sin seguimiento en el portal.
-- Consulta `SDK.environment` después de init. Solo llama a los módulos cuando
-  es `local` o `crazygames`. En `disabled` u otro valor no accede a los módulos:
-  permite probar el juego sin eventos, sin inventar dominios o sitelocks.
-- Emite `game.loadingStart()` antes de cargar el motor; `loadingStop()` cuando
-  el menú y las imágenes de mundos/Endless están listos. La música se decodifica
-  con la estrategia existente, sin bloquear el menú con las tres pistas enteras.
-- `gameplayStart()` solo cuando el estado real del juego pasa a `playing`.
-  `gameplayStop()` al pausar, morir, terminar nivel/carrera o entrar en menús.
-  Volver a jugar/reaparecer emite un nuevo inicio; no envía un evento por frame.
-- Una pausa automática por pérdida de foco/visibilidad **no** emite stop/start
-  solo por ese motivo. CrazyGames gestiona el foco. La pausa del juego se
-  conserva; si después eliges volver al menú, sí termina el segmento jugable.
-- Lee `game.settings.muteAudio` y registra `addSettingsChangeListener`. Un gain
-  final reúne música HD, ambiente, chiptune y efectos; silencia también los
-  sonidos ya programados. Los ajustes del juego no pueden anular ese mute.
-  No se escribe el mute del portal en `localStorage`; al quitarlo se conservan
-  las preferencias y volúmenes que el jugador hubiera elegido.
-- En idioma **Auto**, usa `SDK.user.systemInfo.locale`: español para `es`,
-  `es-ES`, etc.; inglés si falta o no está soportado. La selección manual
-  Español/English continúa funcionando y guardándose localmente.
-- No muestra ni ejecuta pantalla completa propia desde título, HUD ni mando.
-  El control Y/△ no solicita fullscreen en esta variante. F11 del propio
-  navegador y el botón fullscreen del portal no se interceptan.
+Campaña, continuación, registros, logros, opciones, idioma y récords Endless
+usan las mismas claves existentes, pero su fuente de verdad es el SDK. No hay
+una segunda copia local que sobrescriba la cuenta al iniciar. CrazyGames guarda
+localmente a invitados y sincroniza al iniciar sesión; sin cuenta no hay
+sincronización entre dispositivos. El SDK controla el debounce de subida y no
+se afirma que cada `setItem()` implique confirmación inmediata del servidor.
 
-No hay integración de anuncios, User login, Data/cloud saves, compras ni otros
-trackers del desarrollador. El acceso a `user.systemInfo` solo consulta el locale
-ya disponible; no solicita la cuenta ni sube el progreso del jugador.
+La migración importa únicamente cinco claves conocidas del **mismo origen**
+y solo si el almacén SDK no contiene ya datos del juego. Valida JSON/idioma,
+limita tamaño y deja una marca local para no reimportar el mismo perfil en otra
+cuenta. No lee datos de otras aplicaciones, ni puede acceder a partidas de
+itch.io, escritorio u otros orígenes. El fichero local antiguo no se borra.
 
-## Validación local y Preview Tool
+Un error de lectura inicial no crea una partida vacía sobre la nube. Los fallos
+de escritura muestran un aviso y no activan un fallback local silencioso. La
+campaña hace autosave periódico cada 15 segundos de juego, además de sus puntos
+de guardado existentes. Free Play conserva la continuación de Historia y
+Endless conserva su política original de récords, no una reanudación del mapa.
+El SDK recarga juegos con Data Module al entrar/salir de cuenta; al recibir
+login se bloquean escrituras del estado antiguo para proteger la nueva cuenta.
 
-Pruebas sin tráfico real a CrazyGames:
+Fuera de un entorno SDK `local`/`crazygames` se indica explícitamente que se trata
+de una vista previa local/sin cloud. No se llama a APIs deshabilitadas.
+
+## Carga en etapas
+
+1. `index.html` pinta un menú funcional y el personaje sin fuentes ni texturas
+   remotas. El SDK oficial está en el head, con `defer`: no bloquea el primer
+   dibujo. Los botones pueden dejar una selección pendiente mientras inicia.
+2. Una vez inicializados SDK/datos, se aplican idioma, preferencias y muteAudio.
+   Se pide solo el interludio del menú. Si el navegador bloquea autoplay, el
+   primer toque/tecla/mando puede desbloquearlo; no se cambia una preferencia de
+   silencio guardada. El estilo clásico guardado tampoco fuerza una pista HD.
+3. Tras mostrar el menú, se cargan `game.js` y su CSS en segundo plano. Pulsar
+   Jugar prioriza ese paso. Los menús originales completos sustituyen a la
+   portada mínima, conservando el contexto/buffer y posición musical del menú.
+4. Se carga el fondo del escenario elegido (o las seis capas de Endless) antes
+   de habilitar su simulación. La espera no consume vidas ni adelanta la física.
+5. Con el primer gameplay real, comienza la preparación serial de Everyday,
+   Claustrophobic y Epic. El interludio continúa hasta que Everyday está listo,
+   y se usa el fundido del motor existente. El resto de imágenes se precarga de
+   una en una después, sin bloquear la primera partida. Las miniaturas/galería
+   se solicitan cuando sus menús las necesitan.
+
+El menú + MP3 ronda **0,40 MB**, más la transferencia independiente del SDK. El
+módulo diferido ronda **0,45 MB**. El informe de cada build tiene las cifras
+exactas y los hashes. Esto no convierte todo el juego en 0,40 MB: el ZIP sigue
+incluyendo las grabaciones y mundos completos. No se publican promesas de carga
+en X segundos, que dependen de red, equipo, caché y SDK.
+
+Los eventos `gameplayStart` solo indican una partida realmente lista y en
+marcha, nunca el menú de carga. No se adelanta ese evento para maquillar métricas.
+`loadingStart`/`loadingStop` marcan preparación y cargas de escenario; la pérdida
+de foco conserva el comportamiento anterior. Todo audio (incluido menú mínimo)
+respeta `muteAudio`; el fullscreen es del portal, no del juego.
+
+## Fallos de carga y diagnóstico
+
+La captura antigua no revelaba su causa: el mismo mensaje genérico se mostraba
+para SDK, código y recursos. No se debe concluir que era una conexión defectuosa.
+Ahora se muestran **etapa + código SDK o nombre de archivo**. Un fichero de
+escenario ausente puede reintentarse sin reiniciar la partida. Un error de SDK,
+Data Module o del código inicial exige recargar para no arrancar parcialmente.
+Un fallo del MP3 de portada no bloquea los menús.
+
+El nuevo paquete elimina la dependencia externa del cargador propio
+`crazygames.js`: este pequeño adaptador va dentro de index.html. El SDK oficial
+sigue siendo remoto y no se copia dentro del ZIP. Los nombres/rutas son planos.
+Esto reduce los errores de subida parcial; aun así deben subirse **todos** los
+archivos del ZIP, no solo HTML/JS/CSS.
+
+## Pruebas
 
 ```sh
 npm test
 npm run verify:core
 npm run build:crazygames
-python -m pip install playwright==1.55.0
-python -m playwright install chromium
 python tests/browser_crazygames.py
-# --browser /ruta/a/chromium permite usar otro Chromium instalado.
+python tests/browser_crazygames_loading.py
 ```
 
-Los tests simulan explícitamente el SDK, `localStorage`, mandos y ciertos eventos
-de foco. No certifican un portal real ni un mando físico. Incluyen decodificación
-y medición de señal real de Web Audio dentro de Chromium.
+Los scripts Python usan Playwright/Chromium. El segundo sirve los archivos por
+HTTP loopback en Actions, prueba un SDK lento, primer frame, peticiones diferidas,
+audio real, guardados entre contextos, cuota, archivos ausentes/reintentos y
+excepciones de código. En entornos que bloquean la navegación existe una opción
+explícita `--document-harness` (documento y rutas en memoria), reportada en JSON.
+No altera el código del juego. Los informes usan `test-results/crazygames-*`.
 
-En localhost con conexión se usa el SDK **real**, en entorno `local`. La URL
-`http://127.0.0.1:5173/?muteAudio=true` permite probar el mute mediante el SDK.
-Para probar desde otro dispositivo/IP local, el SDK documenta
-`?useLocalSdk=true`; sirve el desarrollo explícitamente en tu LAN de confianza.
+**Los SDK de las pruebas son simulados.** No se conectan a cuentas reales ni
+validan la sincronización de los servidores de CrazyGames. Antes de enviar a QA:
+abrir Preview Tool con la opción Data Module, comprobar portada/controles/audio,
+completar un checkpoint, salir/volver, y usar otra sesión/dispositivo con la
+misma cuenta para comprobar su sincronización. Esperar unos segundos después
+de guardar; el SDK agrupa sus escrituras.
 
-En el **Preview Tool oficial**, comprobar antes de enviar:
+## Documentación oficial y alcance
 
-- Menú sin evento gameplayStart prematuro. Inicio al comenzar Historia,
-  Free Play, práctica de jefe y Endless; parada al pausar, morir y salir.
-- Silencio impuesto por el portal en título, partida y Museo, también al pulsar
-  los interruptores del juego. Quitar el mute no debe borrar un silencio manual.
-- Sin botones propios de fullscreen ni acciones desde Y/△. El botón del portal
-  debe seguir funcionando al redimensionar el iframe.
-- Idioma automático según locale del portal y selección manual de idioma.
-- Ventanas de 821×462/907×510 y móvil horizontal 800×450, teclas y táctil.
-- Audio HD, ambientes, efectos, versión clásica y guardado local al recargar.
-- Ningún enlace de promoción a itch.io o a otros portales dentro del juego.
+- SDK e inicialización: https://docs.crazygames.com/sdk/intro/
+- Data Module: https://docs.crazygames.com/sdk/data/
+- Eventos / muteAudio: https://docs.crazygames.com/sdk/game/
+- Cambio de cuenta: https://docs.crazygames.com/sdk/user/#auth-listener
+- Carga por etapas: https://docs.crazygames.com/resources/getting-to-the-first-frame/
 
-Para diagnosticar, la consola expone:
-
-```js
-GumflowCrazyGames.snapshot()       // entorno, init/ready, mute, eventos y errores
-GumflowCrazyGames.audioSnapshot()  // gain y RMS de la salida real; no datos personales
-```
-
-No debes dar por superado QA únicamente porque el workflow esté verde.
-**Full Launch** requerirá revisar requisitos adicionales (por ejemplo guardado
-Data SDK cuando aplique, onboarding y monetización), no solo activar una flag.
-
-## Privacidad y distribución
-
-La edición CrazyGames carga un SDK de terceros y envía eventos del juego a esa
-plataforma; sus servicios y políticas se aplican. Las afirmaciones de juego
-completamente offline corresponden a HTML standalone/itch.io/desktop originales,
-no a esta distribución. No añadas una promesa de cero comunicaciones a su ficha.
-No se solicita aprobación de SignPath ni se cambia ningún certificado aquí.
-
-## Fuentes oficiales consultadas (20-09-2026)
-
-- SDK/init/entornos: https://docs.crazygames.com/sdk/intro/
-- Eventos y muteAudio: https://docs.crazygames.com/sdk/game/
-- Locale: https://docs.crazygames.com/sdk/user/#system-info
-- Pantalla completa y promoción: https://docs.crazygames.com/requirements/gameplay/
-- Tamaño, rutas, Basic Launch: https://docs.crazygames.com/requirements/technical/
-- Portal de envío/Preview Tool: https://developer.crazygames.com/
-
-## Comprobaciones de esta entrega
-
-Base revisada: `3b2add38efbd4be587b438f30929c3c2535317e4` (20-09-2026).
-Árbol base: `a47f7f18fa17d0a73c3c667fbba2bfeba382b068`.
-
-- `npm test`: 52 pruebas aprobadas (incluidos contrato SDK, payload e aislamiento).
-- `npm run verify:core`: núcleo 6.1 y 24 recursos originales sin cambios.
-- Se reconstruyó una copia limpia de la base y se compararon sus 31 archivos de
-  distribución ordinaria con los del proyecto ampliado: igualdad byte por byte
-  en HTML autocontenido, ZIP itch, ZIP web, web desglosada y sus hashes.
-- Regresión Chromium original: ambas distribuciones, ES/EN, entrada y movimiento
-  en siete escenarios, siete arenas, ambos modos Endless, música, mando simulado
-  y ocho casos de arranque de audio/preferencias.
-- Regresión CrazyGames: inicialización, ajustes/mute dinámico, silencio de salida
-  medido en Web Audio, idioma, partidas/pausas/muerte/reaparición, foco, entrada a
-  siete mundos/arenas, ambos Endless, ausencia de fullscreen interno, mando
-  simulado y interfaz táctil 800×450. SDK desactivado y fallos de carga también.
-- ZIP: 28 archivos, `index.html` en raíz, sin tests/fixtures ni ZIPs anidados.
-- Sintaxis YAML revisada. El workflow aún no se ha ejecutado en GitHub Actions;
-  su validación efectiva ocurrirá tras subir el parche.
-
-No se ha usado el SDK remoto en las pruebas automatizadas, ni una cuenta del
-Developer Portal, ni una sesión del Preview Tool. Los stubs del SDK **solo**
-existen dentro de `tests/` y nunca viajan con el juego. No se presenta esta
-comprobación como certificación de CrazyGames ni como una prueba de mandos
-físicos, una tienda publicada o un nuevo binario nativo.
+Esta edición web contacta con CrazyGames para inicializar el SDK, informar de
+ciclo de juego y persistir datos. No se describe como offline ni libre de red.
+Los paquetes normales siguen sin integrar el SDK. No hay anuncios ni cuentas
+propias del juego; los servicios de cuenta/almacenamiento pertenecen al portal.

@@ -29,6 +29,14 @@ GitHub; those services have their own privacy policies. The native GUMFLOW
 application itself does not require an online account or network service for
 gameplay.
 
+### Separately built CrazyGames web edition
+
+The CrazyGames web edition loads the official CrazyGames SDK and sends game
+lifecycle events and save data through that SDK. Account/guest storage and cloud
+synchronization are handled by CrazyGames. This integration is not included in
+the offline Windows/Linux packages covered by the planned signing process.
+See [the CrazyGames integration guide](docs/CRAZYGAMES.md) for its scope.
+
 ## Release and signing process
 
 1. Source code and build scripts are maintained in this repository.

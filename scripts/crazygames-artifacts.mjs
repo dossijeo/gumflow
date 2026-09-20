@@ -13,5 +13,7 @@ try {
   fs.writeFileSync(path.join(dir,name+'.sha256'),sha256(zip)+'  '+name+'\n');
   report.archive=name;
   fs.writeFileSync(path.join(dir,`GUMFLOW-v${PROJECT.version}-crazygames-build.json`),JSON.stringify(report,null,2)+'\n');
+  if(process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+    `## CrazyGames — cloud / staged loading\n\n| Item | Size |\n|---|---:|\n| Initial menu + menu MP3 | ${(report.initialMenuBytes/1e6).toFixed(3)} MB |\n| Deferred game.js | ${(report.gameModuleBytes/1e6).toFixed(3)} MB |\n| Upload ZIP | ${(zip.length/1e6).toFixed(2)} MB |\n\n${report.fileCount} flat files. SDK transfer not included. Select **SDK Data Module** in Progress Save.\n`);
   console.log(`Staged ${name}: ${(zip.length/1e6).toFixed(2)} MB. Nothing uploaded.`);
 } catch(e) { console.error(e.message);process.exitCode=1; }

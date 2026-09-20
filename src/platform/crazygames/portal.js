@@ -1,6 +1,6 @@
 /* CrazyGames-only adapter. Loaded before game.js, never in the normal builds.
  * API contract: https://docs.crazygames.com/sdk/intro/ and /sdk/game/ (v3).
- * No account prompts, ads, analytics of our own, or save-data uploads.
+ * No account prompts, ads or analytics of our own. Saves use the SDK Data Module.
  */
 (function (root) {
   'use strict';
@@ -13,6 +13,7 @@
     let focusLost = false, nextPublishAt = 0;
     let muted = false, language = 'en', initPromise = null, disposed = false;
     const listeners = new Set(), gates = new Map(), errors = [];
+    const storage = root.GumflowCGStorage.createStorage({notify: () => root.dispatchEvent?.(new Event('gumflow-save-status'))});
     const counts = { loadingStart: 0, loadingStop: 0, gameplayStart: 0, gameplayStop: 0 };
     let resolveGame, rejectGame;
     const gameReady = new Promise((resolve, reject) => { resolveGame = resolve; rejectGame = reject; });
@@ -78,6 +79,12 @@
           settingsChanged(sdk.game.settings);
           language = languageFor(sdk.user?.systemInfo?.locale);
         }
+        storage.initialize(sdk, environment);
+        // SDK reloads Data Module games on login. Freeze old in-memory writes
+        // immediately so a pagehide autosave cannot overwrite the new account.
+        if(supported.has(environment)&&sdk.user?.isUserAccountAvailable&&typeof sdk.user.addAuthListener==='function') {
+          sdk.user.addAuthListener(()=>storage.freeze());
+        }
         // 'disabled' and any future unknown environment: no game/user API calls.
         initialized = true;
         if (enabled()) startedLoading = call('loadingStart');
@@ -105,17 +112,19 @@
           rms: Math.sqrt(values.reduce((sum, n) => sum + n*n, 0) / values.length) };
       });
     }
+    function beginLoading(){ if(!startedLoading && enabled())startedLoading=call('loadingStart'); }
+    function endLoading(){ if(startedLoading){call('loadingStop');startedLoading=false;} }
     function markReady() {
       if (ready || disposed) return;
       ready = true;
-      if (startedLoading) call('loadingStop');
+      endLoading();
       publishState();
       resolveGame();
     }
     function failGame(e) { error(e); rejectGame(e); }
     function snapshot() {
       return { environment, enabled: enabled(), initialized, ready, muted, language,
-        desiredPlaying, reportedPlaying, focusLost, counts: { ...counts }, errors: [...errors] };
+        desiredPlaying, reportedPlaying, focusLost, storage:storage.snapshot(), counts: { ...counts }, errors: [...errors] };
     }
     function dispose() {
       if (disposed) return;
@@ -128,7 +137,7 @@
       for (const { gain, meter } of gates.values()) { gain.disconnect(); meter.disconnect(); }
       gates.clear();
     }
-    return { initialize, audioDestination, audioSnapshot, markReady, failGame,
+    return { initialize, audioDestination, audioSnapshot, markReady, failGame, storage, beginLoading, endLoading,
       whenReady: () => gameReady, snapshot, dispose,
       noteFocusLoss() { if (desiredPlaying) focusLost = true; },
       clearFocusLoss() { focusLost = false; },

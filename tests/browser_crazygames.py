@@ -16,17 +16,18 @@ SDK_URL = 'https://sdk.crazygames.com/crazygames-sdk-v3.js'
 # Test-only SDK fixture. Its methods throw when called before init or when disabled.
 SDK = r"""
 (() => {
- const cfg=window.__CG_TEST_CONFIG;const calls=[];const listeners=new Set();let initialized=false;
+ const cfg=window.__CG_TEST_CONFIG;const values=new Map(Object.entries(cfg.saved||{}));const calls=[];const listeners=new Set();let initialized=false;
  const assertReady=()=>{if(!initialized)throw Error('SDK call before init');if(cfg.environment==='disabled')throw Error('SDK disabled');};
  const game={settings:{muteAudio:cfg.mute},
   addSettingsChangeListener(fn){assertReady();listeners.add(fn)},
   removeSettingsChangeListener(fn){assertReady();listeners.delete(fn)}};
  for(const name of ['loadingStart','loadingStop','gameplayStart','gameplayStop'])game[name]=()=>{assertReady();calls.push(name)};
  window.CrazyGames={SDK:{async init(){calls.push('init');await new Promise(r=>setTimeout(r,cfg.delay||0));if(cfg.reject)throw Error('fixture init error');initialized=true;},
+ data:{getItem:k=>{assertReady();return values.get(k)??null},setItem:(k,v)=>{assertReady();values.set(k,String(v))},removeItem:k=>values.delete(k)},
  get environment(){if(!initialized)throw Error('environment before init');return cfg.environment},
  get game(){assertReady();return game},get user(){assertReady();return {systemInfo:{locale:cfg.locale}}}}};
  window.__CG_TEST={calls,setMute(muteAudio){game.settings={muteAudio};for(const fn of listeners)fn(game.settings)},
- partial(){for(const fn of listeners)fn({disableChat:true})},listeners};
+ partial(){for(const fn of listeners)fn({disableChat:true})},listeners,values};
 })();
 """
 HARNESS = r"""
@@ -71,7 +72,7 @@ async def new_game(browser, *, environment='crazygames', locale='en-US', mute=Fa
     if reject or abort_sdk:
         await page.wait_for_selector('#cgRetry:not([hidden])')
     else:
-        await page.wait_for_function('window.GumflowCrazyGames?.ready && document.getElementById("cgLoading").hidden', polling=50)
+        await page.wait_for_function('window.GumflowCrazyGames?.ready && document.getElementById("cgShell").hidden', polling=50)
     return ctx,page,errors,missing,requests
 
 async def main(browser_path=None):
@@ -107,9 +108,9 @@ async def main(browser_path=None):
         for _ in range(2): await page.click('#gf5MusicEnabled')
         await page.wait_for_timeout(250)
         assert await page.evaluate('__gumTest.crazygames.audio().every(x=>x.gain===0 && x.rms===0)')
-        settings=await page.evaluate('JSON.parse(localStorage.getItem("gumflow-v3")).settings')
+        settings=await page.evaluate('JSON.parse(window.GumflowCrazyGames.storage.getItem("gumflow-v3")).settings')
         await page.evaluate('__CG_TEST.setMute(false)');await page.wait_for_timeout(100)
-        assert settings==await page.evaluate('JSON.parse(localStorage.getItem("gumflow-v3")).settings')
+        assert settings==await page.evaluate('JSON.parse(window.GumflowCrazyGames.storage.getItem("gumflow-v3")).settings')
         results.append('Portal mute covers HD, ambience, classic and FX without changing user preferences')
 
         # All scene starts use normal game state, including captured menu/test hooks.
@@ -117,6 +118,7 @@ async def main(browser_path=None):
         for i in range(7):
             await page.evaluate('__gumTest.menu()')
             await page.evaluate('i=>__gumTest.start(i)',i)
+            await page.evaluate('__gumTest.crazygames.sceneReady()')
             snap=await page.evaluate('__gumTest.step(240,{right:true})')
             assert snap['state']=='playing' and snap['x']>150,snap
             assert await page.evaluate('__gumTest.crazygames.info().reportedPlaying')
@@ -129,10 +131,12 @@ async def main(browser_path=None):
         for i in range(7):
             await page.evaluate('__gumTest.menu()')
             await page.evaluate('i=>__gumTest.bossTrial(i)',i)
+            await page.evaluate('__gumTest.crazygames.sceneReady()')
             await page.evaluate('__gumTest.step(20,{right:true})')
             assert await page.evaluate('__gumTest.crazygames.info().reportedPlaying')
         for relax in (False,True):
             await page.evaluate('r=>__gumTest.endless(r,"CG-REGRESSION")',relax)
+            await page.evaluate('__gumTest.crazygames.sceneReady()')
             await page.evaluate('__gumTest.step(360,{right:true})')
             assert await page.evaluate('__gumTest.crazygames.info().reportedPlaying')
             await page.evaluate('__gumTest.endlessFinish("Test")')
@@ -140,7 +144,7 @@ async def main(browser_path=None):
         results.append('Seven boss arenas, Endless normal/Relax and results send correct events')
 
         # Losing focus is handled by CG. Preserve auto-pause but do not send fake stop.
-        await page.evaluate('__gumTest.start(0); __gumTest.step(1,{})')
+        await page.evaluate('__gumTest.start(0)');await page.evaluate('__gumTest.crazygames.sceneReady()');await page.evaluate('__gumTest.step(1,{})')
         counts=await page.evaluate('__gumTest.crazygames.info().counts')
         await page.evaluate('window.dispatchEvent(new Event("blur")); __gumTest.crazygames.sync()')
         assert await page.evaluate('__gumTest.snapshot().state')=='paused'
@@ -153,7 +157,7 @@ async def main(browser_path=None):
         assert await page.evaluate('__gumTest.crazygames.info().counts.gameplayStop')==counts['gameplayStop']+1
         results.append('Focus/background auto-pause preserved without reporting focus as gameplay stop')
         # Death/respawn are actual breaks, unlike a mere window blur.
-        await page.evaluate('__gumTest.start(0);__gumTest.step(1,{});__gumTest.assist(true)')
+        await page.evaluate('__gumTest.start(0)');await page.evaluate('__gumTest.crazygames.sceneReady()');await page.evaluate('__gumTest.step(1,{});__gumTest.assist(true)')
         counts=await page.evaluate('__gumTest.crazygames.info().counts')
         await page.keyboard.press('r');await page.evaluate('__gumTest.step(1,{})')
         assert await page.evaluate('__gumTest.snapshot().state')=='dying'
@@ -183,12 +187,12 @@ async def main(browser_path=None):
         results.append('SDK locale overrides browser locale only in Auto; unsupported/missing falls back to English')
         ctx,page,errors,missing,_=await new_game(browser,environment='disabled')
         assert await page.evaluate('__CG_TEST.calls')==['init']
-        await page.evaluate('__gumTest.start(0);__gumTest.step(10,{right:true})')
+        await page.evaluate('__gumTest.start(0)');await page.evaluate('__gumTest.crazygames.sceneReady()');await page.evaluate('__gumTest.step(10,{right:true})')
         assert not errors and not missing,(errors,missing)
         assert await page.evaluate('__CG_TEST.calls')==['init']
         await ctx.close()
         ctx,page,errors,missing,_=await new_game(browser,environment='local',mobile=True,locale='es-ES')
-        await page.click('#gf5PlayMain');await page.click('#gf5FreePlay');await page.locator('[data-gf5-play="0"]').click()
+        await page.click('#gf5PlayMain');await page.click('#gf5FreePlay');await page.locator('[data-gf5-play="0"]').click();await page.evaluate('__gumTest.crazygames.sceneReady()')
         await page.evaluate('__gumTest.step(1,{})')
         assert await page.evaluate('__gumTest.crazygames.info().reportedPlaying')
         assert await page.locator('[data-action="jump"]').is_visible()
