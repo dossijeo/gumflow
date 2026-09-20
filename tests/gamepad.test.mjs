@@ -59,7 +59,8 @@ test('native config points at generated web files, not a remote URL',()=>{
   assert.equal(cfg.bundle.linux.appimage.bundleMediaFramework,true);
 });
 test('all package versions agree and an old or injected release tag is refused',()=>{
-  assert.equal(check('v6.1.1'),'6.1.1');for(const v of ['Release-web','v0.1.0','v6.1.1;echo hi'])assert.throws(()=>check(v),/Expected tag/);
+  const current=JSON.parse(fs.readFileSync(path.join(ROOT,'package.json'),'utf8')).version;
+  assert.equal(check('v'+current),current);for(const v of ['Release-web','v0.1.0','v6.1.1;echo hi'])assert.throws(()=>check(v),/Expected tag/);
 });
 
 test('version helper changes only GUMFLOW metadata, not dependency versions',async()=>{

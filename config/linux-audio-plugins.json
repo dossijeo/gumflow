@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "description": "Audio-focused GStreamer payload for GUMFLOW (MP3 decoding, GIO streams and Web Audio). Video/encoder/FFmpeg plugins are not bundled.",
+  "plugins": [
+    "coreelements",
+    "app",
+    "audioconvert",
+    "audioresample",
+    "typefindfunctions",
+    "playback",
+    "audioparsers",
+    "mpg123",
+    "id3demux",
+    "volume",
+    "interleave",
+    "adder",
+    "audiomixer",
+    "audiorate",
+    "autodetect",
+    "pulseaudio",
+    "wavparse",
+    "gio"
+  ],
+  "optionalPlugins": [
+    "alsa"
+  ]
+}

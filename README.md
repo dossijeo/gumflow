@@ -151,3 +151,10 @@ The existing **LICENSE is unchanged**. Original asset provenance remains in
 third-party songs or pictures are introduced. The app icon is rendered from
 Gum's existing drawing function. Source is shipped under the repository's
 existing terms; this patch makes no new claims about rights to upstream music.
+
+## Desktop 6.1.2 packaging update
+
+[Default audio, focused Linux multimedia payload and native CI smoke tests](docs/DESKTOP-6.1.2.md).
+Fresh desktop installations start music on the title; explicit mute preferences
+are preserved. AppImage still bundles its media framework, using an audio-only
+plugin selection instead of the entire installed multimedia collection.

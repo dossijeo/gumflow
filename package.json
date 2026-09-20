@@ -1,6 +1,6 @@
 {
   "name": "gumflow",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "private": true,
   "description": "GUMFLOW 6.1 gameplay with additive gamepad support and Tauri desktop packaging",
   "license": "SEE LICENSE IN LICENSE",
@@ -23,6 +23,8 @@
     "release:check": "node scripts/release.mjs check",
     "test:browser": "python tests/browser_smoke.py",
     "test:gamepad": "python tests/browser_gamepad.py",
-    "version:set": "node scripts/set-version.mjs"
+    "version:set": "node scripts/set-version.mjs",
+    "test:audio-startup": "python tests/browser_audio_startup.py",
+    "test:linux": "python3 tests/linux_appimage_smoke.py --appimage desktop/tauri/src-tauri/target/release/bundle/appimage"
   }
 }

@@ -1,6 +1,12 @@
 name: Build desktop packages
 on:
   workflow_dispatch:
+    inputs:
+      linux_media_profile:
+        description: 'Linux media payload (full is the compatibility fallback)'
+        type: choice
+        options: [audio-only, full]
+        default: audio-only
   workflow_call:
     inputs:
       ref:
@@ -8,6 +14,10 @@ on:
         type: string
         required: false
         default: ''
+      linux_media_profile:
+        type: string
+        required: false
+        default: audio-only
 permissions:
   contents: read
 jobs:
@@ -40,6 +50,7 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       - run: python tests/browser_smoke.py
       - run: python tests/browser_gamepad.py
+      - run: python tests/browser_audio_startup.py
       - name: Resolve lockfiles ONCE for all platforms
         shell: bash
         run: |
@@ -90,6 +101,7 @@ jobs:
       # Lets linuxdeploy/AppImage tools run on CI without a FUSE mount.
       APPIMAGE_EXTRACT_AND_RUN: '1'
       CARGO_TERM_COLOR: always
+      GUMFLOW_LINUX_MEDIA_PROFILE: ${{ inputs.linux_media_profile || 'audio-only' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -106,7 +118,8 @@ jobs:
             libwebkit2gtk-4.1-dev libgtk-3-dev libudev-dev \
             libayatana-appindicator3-dev librsvg2-dev patchelf file libfuse2 \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
-            gstreamer1.0-plugins-bad gstreamer1.0-libav xdg-utils
+            gstreamer1.0-plugins-bad gstreamer1.0-libav gstreamer1.0-alsa \
+            gstreamer1.0-tools xdg-utils xvfb dbus-x11 libgles2
       - uses: actions/download-artifact@v4
         with:
           name: dependency-locks
@@ -119,9 +132,25 @@ jobs:
       - run: npm run build:web
       - name: Check native code and navigation whitelist
         run: cargo test --manifest-path desktop/tauri/src-tauri/Cargo.toml --locked --lib
+      - name: Stage audio-only GStreamer modules (keep MP3 and Web Audio)
+        if: runner.os == 'Linux' && inputs.linux_media_profile != 'full'
+        run: node scripts/prepare-linux-audio.mjs
       - name: Build release bundles (no server or Node runtime shipped)
         run: npm run desktop:build -- --bundles ${{ matrix.bundles }} -- --locked
+      - name: Verify the actual Linux AppImage runtime and music
+        if: runner.os == 'Linux'
+        run: python3 tests/linux_appimage_smoke.py --appimage desktop/tauri/src-tauri/target/release/bundle/appimage --media-profile "$GUMFLOW_LINUX_MEDIA_PROFILE"
+      - name: Upload Linux diagnostics (also on failure)
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-runtime-tests
+          path: test-results/
+          if-no-files-found: ignore
       - run: node scripts/release.mjs collect ${{ matrix.platform }}
+      - name: Report final download sizes
+        shell: bash
+        run: node scripts/release-sizes.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: gumflow-release-${{ matrix.platform }}

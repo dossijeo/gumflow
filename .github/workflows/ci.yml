@@ -25,6 +25,7 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       - run: python tests/browser_smoke.py
       - run: python tests/browser_gamepad.py
+      - run: python tests/browser_audio_startup.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

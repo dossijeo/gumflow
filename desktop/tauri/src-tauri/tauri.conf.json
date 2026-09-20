@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "GUMFLOW",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "identifier": "io.github.dossijeo.gumflow",
   "build": {
     "beforeDevCommand": "node ../../scripts/dev.mjs",
@@ -11,16 +11,29 @@
   },
   "app": {
     "withGlobalTauri": true,
-    "windows": [{
-      "label": "main", "title": "GUMFLOW", "create": false,
-      "width": 1280, "height": 720, "minWidth": 800, "minHeight": 450,
-      "resizable": true, "center": true, "fullscreen": false,
-      "dragDropEnabled": false, "useHttpsScheme": true,
-      "backgroundColor": "#141326"
-    }],
+    "windows": [
+      {
+        "label": "main",
+        "title": "GUMFLOW",
+        "create": false,
+        "width": 1280,
+        "height": 720,
+        "minWidth": 800,
+        "minHeight": 450,
+        "resizable": true,
+        "center": true,
+        "fullscreen": false,
+        "dragDropEnabled": false,
+        "useHttpsScheme": true,
+        "backgroundColor": "#141326",
+        "additionalBrowserArgs": "--autoplay-policy=no-user-gesture-required"
+      }
+    ],
     "security": {
       "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' ipc: http://ipc.localhost https://ipc.localhost; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
-      "capabilities": ["main"]
+      "capabilities": [
+        "main"
+      ]
     }
   },
   "bundle": {
@@ -32,14 +45,38 @@
     "longDescription": "A high-speed momentum platformer with seven worlds, bosses, Endless Flow and adaptive music.",
     "homepage": "https://github.com/dossijeo/gumflow",
     "licenseFile": "../../../LICENSE",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
     "windows": {
-      "webviewInstallMode": { "type": "downloadBootstrapper", "silent": true },
-      "nsis": { "installMode": "currentUser", "languages": ["English", "Spanish"], "displayLanguageSelector": true }
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper",
+        "silent": true
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": [
+          "English",
+          "Spanish"
+        ],
+        "displayLanguageSelector": true
+      }
     },
     "linux": {
-      "appimage": { "bundleMediaFramework": true },
-      "deb": { "depends": ["gstreamer1.0-plugins-base", "gstreamer1.0-plugins-good", "gstreamer1.0-libav", "libudev1"] }
+      "appimage": {
+        "bundleMediaFramework": true
+      },
+      "deb": {
+        "depends": [
+          "gstreamer1.0-plugins-base",
+          "gstreamer1.0-plugins-good",
+          "gstreamer1.0-libav",
+          "libudev1"
+        ]
+      }
     }
   }
 }
