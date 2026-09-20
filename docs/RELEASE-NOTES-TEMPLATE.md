@@ -17,8 +17,14 @@ English/Spanish and original assets are retained. Saves are local to each
 installation/origin; browser progress is not automatically copied to desktop.
 
 Controller detection, actual hardware and the native audio/rendering must be
-checked on the release candidates before publication. No code signing or
-self-updater is configured. This release does not contain Android/iOS packages.
+checked on the release candidates before publication. No self-updater is
+configured. This release does not contain Android/iOS packages.
+
+## Code signing
+
+GUMFLOW is applying to the SignPath Foundation open-source code signing program.
+If approved, official Windows releases will be signed through SignPath.
+Current release assets must not be described as SignPath-signed until approval.
 
 SHA256SUMS covers the downloadable files. The two lockfiles record the exact
 npm/Cargo dependency resolution shared by this workflow's platform builds.
