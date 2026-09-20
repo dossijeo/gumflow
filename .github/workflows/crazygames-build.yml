@@ -1,0 +1,76 @@
+name: Build CrazyGames package
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: Existing tag/ref to build
+        type: string
+        required: false
+        default: ''
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'config/**'
+      - 'web/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - '.github/workflows/crazygames-build.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'config/**'
+      - 'web/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - '.github/workflows/crazygames-build.yml'
+permissions:
+  contents: read
+jobs:
+  crazygames:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source, contract and preservation tests
+        run: |
+          npm test
+          npm run verify:core
+      - name: Build the isolated portal edition
+        run: npm run build:crazygames
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install playwright==1.55.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Browser / SDK v3 contract tests (mock SDK; no live analytics)
+        run: python tests/browser_crazygames.py
+      - name: Stage upload ZIP and checksums
+        run: node scripts/crazygames-artifacts.mjs
+      - name: Upload CrazyGames package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gumflow-release-crazygames
+          path: dist/crazygames-artifacts/
+          if-no-files-found: error
+          retention-days: 30
+      - name: SDK diagnostics and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crazygames-test-reports
+          path: |
+            test-results/crazygames-*
+            dist/gumflow-crazygames-build.json
+          if-no-files-found: ignore
+          retention-days: 14

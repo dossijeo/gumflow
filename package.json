@@ -25,6 +25,9 @@
     "test:gamepad": "python tests/browser_gamepad.py",
     "version:set": "node scripts/set-version.mjs",
     "test:audio-startup": "python tests/browser_audio_startup.py",
-    "test:linux": "python3 tests/linux_appimage_smoke.py --appimage desktop/tauri/src-tauri/target/release/bundle/appimage"
+    "test:linux": "python3 tests/linux_appimage_smoke.py --appimage desktop/tauri/src-tauri/target/release/bundle/appimage",
+    "build:crazygames": "node scripts/build-crazygames.mjs",
+    "dev:crazygames": "node scripts/dev.mjs --crazygames",
+    "test:crazygames": "python tests/browser_crazygames.py"
   }
 }

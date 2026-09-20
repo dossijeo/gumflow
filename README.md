@@ -167,3 +167,31 @@ existing terms; this patch makes no new claims about rights to upstream music.
 Fresh desktop installations start music on the title; explicit mute preferences
 are preserved. AppImage still bundles its media framework, using an audio-only
 plugin selection instead of the entire installed multimedia collection.
+
+## CrazyGames edition — separate web distribution
+
+[CrazyGames build, SDK integration and upload guide](docs/CRAZYGAMES.md)
+
+```sh
+npm run build:crazygames     # dist/gumflow-crazygames.zip; no npm dependencies
+npm run dev:crazygames       # localhost preview; official SDK needs Internet
+npm run test:crazygames      # Python/Playwright, explicit mocked SDK v3
+```
+
+**Actions → Build CrazyGames package** builds and tests this variant without
+compiling Rust, Windows or Linux. Download `gumflow-release-crazygames`, extract
+GitHub's outer artifact ZIP, and upload the enclosed `GUMFLOW-v…-crazygames.zip`
+to the CrazyGames Developer Portal. `index.html` is at the upload ZIP's root.
+Future **Draft release** runs also attach that ZIP to the draft, with its build
+report and checksum. No existing published release is modified.
+
+This variant initializes CrazyGames SDK v3 before the game starts, reports
+actual gameplay start/stop, respects the portal's `muteAudio`, uses the portal
+locale for automatic language selection, and removes in-game fullscreen.
+No advertising, account prompts, cloud saves or purchases are implemented.
+Normal HTML/itch.io/desktop builds remain offline and do not load this SDK.
+The CrazyGames variant contacts the SDK and reports lifecycle events to the
+platform: do **not** describe it as fully offline or network-free.
+
+The included browser tests use a **mock SDK** and real Canvas/Web Audio.
+They are not a substitute for CrazyGames' live **Preview Tool** or QA approval.

@@ -1,0 +1,12 @@
+/* Portal owns fullscreen. Hide before the game's first paint, including HUD. */
+#full, #gf6TitleFull { display: none !important; pointer-events: none !important; }
+#cgLoading { position:fixed; inset:0; z-index:100000; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; gap:18px; padding:32px;
+  background:#141326; color:#fff4db; text-align:center; font:600 17px system-ui,sans-serif; }
+#cgLoading[hidden], #cgRetry[hidden] { display:none !important; }
+#cgLoading h1 { font:900 clamp(32px,8vw,68px) system-ui,sans-serif; color:#ff83b8; margin:0; }
+#cgLoadingStatus { max-width:560px; line-height:1.6; }
+#cgRetry { padding:14px 26px; border:0; border-radius:14px; color:#241329;
+  background:#ff83b8; font:800 18px system-ui,sans-serif; cursor:pointer; }
+html.cg-loading #panel { visibility:hidden !important; }
+#cgMuteNotice { font:500 13px/1.5 system-ui,sans-serif; color:#c5bed8; margin:14px 0 0; }

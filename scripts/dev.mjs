@@ -7,14 +7,17 @@ import { ROOT, writeWeb, sha256 } from './lib/build.mjs';
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || '5173');
 const args = process.argv.slice(2);
+const crazygames = args.includes('--crazygames');
+if(crazygames) args.splice(args.indexOf('--crazygames'), 1);
+const { writeCrazyGames } = crazygames ? await import('./lib/crazygames-build.mjs') : {};
 if (args.includes('--help')) {
-  console.log('npm run dev\nDefault http://127.0.0.1:5173\nUse PORT / HOST environment variables to change the bind address.\nRefresh the page after editing src/, web/ or assets/.');
+  console.log('npm run dev [-- --crazygames]\nDefault http://127.0.0.1:5173\nUse PORT / HOST environment variables to change the bind address.\nRefresh the page after editing src/, web/ or assets/.');
   process.exit(0);
 }
 if (args.length || !Number.isInteger(port) || port < 1 || port > 65535) {
   console.error('Invalid arguments or PORT. Use --help.'); process.exit(1);
 }
-const publicRoot = path.join(ROOT, 'dist/web');
+const publicRoot = path.join(ROOT, crazygames ? 'dist/crazygames' : 'dist/web');
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.json': 'application/json; charset=utf-8' };
 let version = '';
 function signature() {
@@ -32,7 +35,7 @@ function signature() {
 }
 function rebuild() {
   const next = signature();
-  if (version !== next) { writeWeb(); version = next; console.log('Built web files.'); }
+  if (version !== next) { (crazygames ? writeCrazyGames : writeWeb)(); version = next; console.log('Built web files.'); }
 }
 try { rebuild(); } catch (e) { console.error(e.message); process.exit(1); }
 const server = http.createServer((req,res) => {
