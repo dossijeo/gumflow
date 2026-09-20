@@ -6,6 +6,14 @@ A fast 2D momentum platformer about a piece of gum that refuses to be chewed.
 Seven campaign worlds, bosses, Free Play, Endless Flow, Spanish/English menus,
 and adaptive HD/classic music.
 
+## 🎮 Play GUMFLOW
+
+**[▶ PLAY FREE IN YOUR BROWSER ON ITCH.IO](https://dossijeo.itch.io/gumflow)**
+
+No installation required.
+
+**[Download Windows / Linux builds](https://github.com/dossijeo/gumflow/releases)**
+
 This revision packages the approved **6.1 game as 6.1.1** and adds controller
 input and a Tauri 2 desktop shell. The game's content/version label remains 6.1;
 6.1.1 identifies the new packaging and input layer, not a rewritten game.
