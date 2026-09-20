@@ -18,7 +18,8 @@ This revision packages the approved **6.1 game as 6.1.1** and adds controller
 input and a Tauri 2 desktop shell. The game's content/version label remains 6.1;
 6.1.1 identifies the new packaging and input layer, not a rewritten game.
 
-**[Publicación y compilación, en español](docs/DESKTOP.md)** ·
+**[Code signing policy](CODE_SIGNING_POLICY.md)** ·
+[Publicación y compilación, en español](docs/DESKTOP.md) ·
 [Gamepad design and limitations](docs/GAMEPAD.md) ·
 [Original source architecture](docs/ARCHITECTURE.md) ·
 [Asset inventory](docs/ASSETS.md)
